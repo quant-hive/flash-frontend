@@ -1,9 +1,10 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Zap } from "lucide-react"
-import { PrivacyDialog } from "@/components/privacy-dialog"
-import { TermsDialog } from "@/components/terms-dialog"
-import { CodeAnimation } from "@/components/code-animation"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Zap } from "lucide-react";
+import { PrivacyDialog } from "@/components/privacy-dialog";
+import { TermsDialog } from "@/components/terms-dialog";
+import { CodeAnimation } from "@/components/code-animation";
+import { FeatureCards } from "@/components/home/featured-cards";
 
 export default function Home() {
   return (
@@ -23,10 +24,16 @@ export default function Home() {
           </span>
         </nav>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link href="/login" className="text-sm font-medium hover:underline underline-offset-4 text-white">
+          <Link
+            href="/login"
+            className="text-sm font-medium hover:underline underline-offset-4 text-white"
+          >
             Login
           </Link>
-          <Link href="/register" className="text-sm font-medium hover:underline underline-offset-4 text-white">
+          <Link
+            href="/register"
+            className="text-sm font-medium hover:underline underline-offset-4 text-white"
+          >
             Register
           </Link>
         </nav>
@@ -40,7 +47,8 @@ export default function Home() {
                   Advanced Financial Analysis Platform
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl">
-                  Enter your investment ideas, select tickers, and see how your ideas would have performed.
+                  Enter your investment ideas, select tickers, and see how your
+                  ideas would have performed.
                 </p>
               </div>
               <div className="space-x-4">
@@ -56,46 +64,23 @@ export default function Home() {
         </section>
         <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-900">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-3 lg:gap-12">
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Easy Testing</h2>
-                  <p className="max-w-[600px] text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                    Describe your investment idea in plain language and let our platform do the heavy lifting.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Comprehensive Analysis</h2>
-                  <p className="max-w-[600px] text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                    Get detailed performance metrics, risk analysis, and visualizations of your idea's performance.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Explainable Results</h2>
-                  <p className="max-w-[600px] text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                    Understand why your idea performed the way it did with our detailed explanatory reports.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <FeatureCards />
           </div>
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-gray-800 relative z-10">
-        <p className="text-xs text-gray-400">© 2025 QuantHive. All rights reserved.</p>
+        <p className="text-xs text-gray-400">
+          © 2025 QuantHive. All rights reserved.
+        </p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <TermsDialog 
+          <TermsDialog
             trigger={
               <button className="text-xs text-gray-400 hover:underline underline-offset-4">
                 Terms of Service
               </button>
             }
           />
-          <PrivacyDialog 
+          <PrivacyDialog
             trigger={
               <button className="text-xs text-gray-400 hover:underline underline-offset-4">
                 Privacy
@@ -105,5 +90,5 @@ export default function Home() {
         </nav>
       </footer>
     </div>
-  )
+  );
 }
