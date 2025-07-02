@@ -1,5 +1,18 @@
-import axios, { isAxiosError } from 'axios';
-import axiosInstance from './axios';
+import axios, { isAxiosError } from "axios";
+import axiosInstance from "./axios";
+import {
+  BacktestRequest,
+  BacktestStatus,
+  BacktestMetrics,
+  BacktestResults,
+  BenchmarkReturns,
+  BacktestFormData,
+  Trade,
+  ReturnData,
+  ApiError,
+  TickerResponse,
+  DatabaseInfo,
+} from "@/types/backtest-service";
 
 export interface BacktestRequest {
   prompt: string;
@@ -13,7 +26,7 @@ export interface BacktestRequest {
 export interface BacktestStatus {
   backtest_id: string;
   name?: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status: "pending" | "running" | "completed" | "failed";
   message: string;
   created_at?: string;
   progress?: number; // Optional progress indicator
@@ -87,7 +100,7 @@ export class ApiError extends Error {
 
   constructor(message: string, status: number, data?: any) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.status = status;
     this.data = data;
   }
@@ -97,7 +110,8 @@ export class ApiError extends Error {
 const handleApiError = (error: any): never => {
   if (isAxiosError(error)) {
     const status = error.response?.status || 500;
-    const message = error.response?.data?.detail || error.message || 'API request failed';
+    const message =
+      error.response?.data?.detail || error.message || "API request failed";
     const data = error.response?.data;
     throw new ApiError(message, status, data);
   }
@@ -108,7 +122,7 @@ export const backtestService = {
   // Run a new backtest
   async runBacktest(data: BacktestFormData): Promise<BacktestStatus> {
     try {
-      const response = await axiosInstance.post('/api/backtest/run', data);
+      const response = await axiosInstance.post("/api/backtest/run", data);
       return response.data;
     } catch (error) {
       return handleApiError(error);
@@ -118,7 +132,9 @@ export const backtestService = {
   // Get status of a backtest
   async getBacktestStatus(backtestId: string): Promise<BacktestStatus> {
     try {
-      const response = await axiosInstance.get(`/api/backtest/status/${backtestId}`);
+      const response = await axiosInstance.get(
+        `/api/backtest/status/${backtestId}`
+      );
       return response.data;
     } catch (error) {
       return handleApiError(error);
@@ -128,12 +144,14 @@ export const backtestService = {
   // Get results of a completed backtest
   async getBacktestResults(backtestId: string): Promise<BacktestResults> {
     try {
-      const response = await axiosInstance.get(`/api/backtest/results/${backtestId}`);
-      
+      const response = await axiosInstance.get(
+        `/api/backtest/results/${backtestId}`
+      );
+
       // Ensure the results contain the backtest_id
       return {
         ...response.data,
-        backtest_id: backtestId
+        backtest_id: backtestId,
       };
     } catch (error) {
       return handleApiError(error);
@@ -143,7 +161,7 @@ export const backtestService = {
   // Get all backtests for the user
   async getUserBacktests(): Promise<BacktestStatus[]> {
     try {
-      const response = await axiosInstance.get('/api/backtest/user/backtests');
+      const response = await axiosInstance.get("/api/backtest/user/backtests");
       return response.data;
     } catch (error) {
       return handleApiError(error);
@@ -153,7 +171,9 @@ export const backtestService = {
   // Delete a backtest
   async deleteBacktest(backtestId: string): Promise<{ message: string }> {
     try {
-      const response = await axiosInstance.delete(`/api/backtest/${backtestId}`);
+      const response = await axiosInstance.delete(
+        `/api/backtest/${backtestId}`
+      );
       return response.data;
     } catch (error) {
       return handleApiError(error);
@@ -161,7 +181,10 @@ export const backtestService = {
   },
 
   // Get downloadable backtest report URL
-  getBacktestReportUrl(backtestId: string, format: 'csv' | 'html' = 'csv'): string {
+  getBacktestReportUrl(
+    backtestId: string,
+    format: "csv" | "html" = "csv"
+  ): string {
     return `${axiosInstance.defaults.baseURL}/api/backtest/download/${backtestId}?format=${format}`;
   },
 
@@ -173,7 +196,9 @@ export const backtestService = {
   // Get trade reports
   async getTradeReports(backtestId: string): Promise<Trade[]> {
     try {
-      const response = await axiosInstance.get(`/api/backtest/trades/${backtestId}`);
+      const response = await axiosInstance.get(
+        `/api/backtest/trades/${backtestId}`
+      );
       return response.data;
     } catch (error) {
       return handleApiError(error);
@@ -183,30 +208,24 @@ export const backtestService = {
   // Get strategy vs benchmark returns
   async getReturnsData(backtestId: string): Promise<ReturnData[]> {
     try {
-      const response = await axiosInstance.get(`/api/backtest/returns/${backtestId}`);
+      const response = await axiosInstance.get(
+        `/api/backtest/returns/${backtestId}`
+      );
       return response.data;
     } catch (error) {
       return handleApiError(error);
     }
-  }
+  },
 };
 
 // Database service
-export interface TickerResponse {
-  tickers: string[];
-}
-
-export interface DatabaseInfo {
-  database_path: string;
-  start_date: string | null;
-  end_date: string | null;
-}
-
 export const databaseService = {
   // Get available tickers
   async getAvailableTickers(): Promise<string[]> {
     try {
-      const response = await axiosInstance.get<TickerResponse>('/api/database/tickers');
+      const response = await axiosInstance.get<TickerResponse>(
+        "/api/database/tickers"
+      );
       return response.data.tickers;
     } catch (error) {
       return handleApiError(error);
@@ -216,7 +235,9 @@ export const databaseService = {
   // Get database info
   async getDatabaseInfo(): Promise<DatabaseInfo> {
     try {
-      const response = await axiosInstance.get<DatabaseInfo>('/api/database/info');
+      const response = await axiosInstance.get<DatabaseInfo>(
+        "/api/database/info"
+      );
       return response.data;
     } catch (error) {
       return handleApiError(error);
@@ -224,12 +245,17 @@ export const databaseService = {
   },
 
   // Get benchmark returns
-  async getBenchmarkReturns(startDate: string, endDate: string): Promise<BenchmarkReturns> {
+  async getBenchmarkReturns(
+    startDate: string,
+    endDate: string
+  ): Promise<BenchmarkReturns> {
     try {
-      const response = await axiosInstance.get<BenchmarkReturns>(`/api/database/benchmark-returns/${startDate}/${endDate}`);
+      const response = await axiosInstance.get<BenchmarkReturns>(
+        `/api/database/benchmark-returns/${startDate}/${endDate}`
+      );
       return response.data;
     } catch (error) {
       return handleApiError(error);
     }
-  }
-}; 
+  },
+};

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap } from "lucide-react";
-import { PrivacyDialog } from "@/components/privacy-dialog";
-import { TermsDialog } from "@/components/terms-dialog";
-import { CodeAnimation } from "@/components/code-animation";
+import { PrivacyDialog } from "@/components/home/privacy-dialog";
+import { TermsDialog } from "@/components/home/terms-dialog";
+import { CodeAnimation } from "@/components/home/code-animation";
 import { FeatureCards } from "@/components/home/featured-cards";
 
 export default function Home() {
