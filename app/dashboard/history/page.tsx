@@ -26,6 +26,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { Progress } from "@/components/ui/progress";
 import { LoadingState } from "@/components/dashboard/history/loading-state";
 import { ErrorState } from "@/components/dashboard/history/error-state";
+import { formatDate } from "@/lib/utils";
 // import { /* types here if needed */ } from "@/types/dashboard-history"
 
 export default function HistoryPage() {
@@ -157,13 +158,6 @@ export default function HistoryPage() {
 
   const handleDownload = (id: string, format: "csv" | "html" = "csv") => {
     window.open(backtestService.getBacktestReportUrl(id, format), "_blank");
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "N/A";
-
-    const date = new Date(dateString);
-    return date.toLocaleString();
   };
 
   const filteredBacktests = backtests.filter(

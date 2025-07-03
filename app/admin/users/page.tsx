@@ -22,6 +22,7 @@ import { StatusBadge } from "@/components/admin/users/status-badge";
 import { AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { User } from "@/types/admin-users";
+import { formatDate } from "@/lib/utils";
 
 export default function AdminUsersPage() {
   const router = useRouter();
@@ -75,9 +76,7 @@ export default function AdminUsersPage() {
                     <TableCell>
                       <StatusBadge status={user.status} />
                     </TableCell>
-                    <TableCell>
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </TableCell>
+                    <TableCell>{formatDate(user.createdAt)}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
                         {user.status !== "approved" && (
