@@ -1,20 +1,33 @@
-"use client"
+"use client";
 
-import { useSettings } from "@/contexts/settings-context"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Laptop, Smartphone, Tablet } from "lucide-react"
-import { useState } from "react"
-import { toast } from "sonner"
+import { useSettings } from "@/contexts/settings-context";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Laptop, Smartphone, Tablet } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const defaultAvatars = [
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9439775.jpg-4JVJWOjPksd3DtnBYJXoWHA5lc1DU9.jpeg",
@@ -27,11 +40,16 @@ const defaultAvatars = [
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/27470341_7294795.jpg-XE0zf7R8tk4rfA1vm4fAHeZ1QoVEOo.jpeg",
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/799.jpg-0tEi4Xvg5YsFoGoQfQc698q4Dygl1S.jpeg",
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9334228.jpg-eOsHCkvVrVAwcPHKYSs5sQwVKsqWpC.jpeg",
-]
+];
 
 export default function SettingsPage() {
-  const { settings, updateSettings, updateNotificationSettings, updatePrivacySettings } = useSettings()
-  const [selectedAvatar, setSelectedAvatar] = useState(settings.avatar)
+  const {
+    settings,
+    updateSettings,
+    updateNotificationSettings,
+    updatePrivacySettings,
+  } = useSettings();
+  const [selectedAvatar, setSelectedAvatar] = useState(settings.avatar);
 
   const handleSaveAccount = () => {
     updateSettings({
@@ -40,19 +58,19 @@ export default function SettingsPage() {
       email: settings.email,
       phone: settings.phone,
       timezone: settings.timezone,
-    })
-    toast.success("Account settings saved successfully")
-  }
+    });
+    toast.success("Account settings saved successfully");
+  };
 
   const handleSaveNotifications = () => {
-    updateNotificationSettings(settings.notifications)
-    toast.success("Notification settings saved successfully")
-  }
+    updateNotificationSettings(settings.notifications);
+    toast.success("Notification settings saved successfully");
+  };
 
   const handleSavePrivacy = () => {
-    updatePrivacySettings(settings.privacy)
-    toast.success("Privacy settings saved successfully")
-  }
+    updatePrivacySettings(settings.privacy);
+    toast.success("Privacy settings saved successfully");
+  };
 
   return (
     <div className="container mx-auto py-10">
@@ -96,14 +114,25 @@ export default function SettingsPage() {
                       }`}
                       onClick={() => setSelectedAvatar(avatar)}
                     >
-                      <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} className="object-cover" />
+                      <AvatarImage
+                        src={avatar}
+                        alt={`Avatar ${index + 1}`}
+                        className="object-cover"
+                      />
                       <AvatarFallback>{index + 1}</AvatarFallback>
                     </Avatar>
                   ))}
                 </div>
                 <div>
-                  <Label htmlFor="custom-avatar">Or upload a custom avatar</Label>
-                  <Input id="custom-avatar" type="file" accept="image/*" className="mt-1" />
+                  <Label htmlFor="custom-avatar">
+                    Or upload a custom avatar
+                  </Label>
+                  <Input
+                    id="custom-avatar"
+                    type="file"
+                    accept="image/*"
+                    className="mt-1"
+                  />
                 </div>
               </div>
               <div className="space-y-2">
@@ -134,37 +163,78 @@ export default function SettingsPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="timezone">Timezone</Label>
-                <Select value={settings.timezone} onValueChange={(value) => updateSettings({ timezone: value })}>
+                <Select
+                  value={settings.timezone}
+                  onValueChange={(value) => updateSettings({ timezone: value })}
+                >
                   <SelectTrigger id="timezone">
                     <SelectValue placeholder="Select Timezone" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="utc-12">International Date Line West (UTC-12)</SelectItem>
-                    <SelectItem value="utc-11">Samoa Standard Time (UTC-11)</SelectItem>
-                    <SelectItem value="utc-10">Hawaii-Aleutian Standard Time (UTC-10)</SelectItem>
-                    <SelectItem value="utc-9">Alaska Standard Time (UTC-9)</SelectItem>
+                    <SelectItem value="utc-12">
+                      International Date Line West (UTC-12)
+                    </SelectItem>
+                    <SelectItem value="utc-11">
+                      Samoa Standard Time (UTC-11)
+                    </SelectItem>
+                    <SelectItem value="utc-10">
+                      Hawaii-Aleutian Standard Time (UTC-10)
+                    </SelectItem>
+                    <SelectItem value="utc-9">
+                      Alaska Standard Time (UTC-9)
+                    </SelectItem>
                     <SelectItem value="utc-8">Pacific Time (UTC-8)</SelectItem>
                     <SelectItem value="utc-7">Mountain Time (UTC-7)</SelectItem>
                     <SelectItem value="utc-6">Central Time (UTC-6)</SelectItem>
                     <SelectItem value="utc-5">Eastern Time (UTC-5)</SelectItem>
                     <SelectItem value="utc-4">Atlantic Time (UTC-4)</SelectItem>
-                    <SelectItem value="utc-3">Argentina Standard Time (UTC-3)</SelectItem>
-                    <SelectItem value="utc-2">South Georgia Time (UTC-2)</SelectItem>
+                    <SelectItem value="utc-3">
+                      Argentina Standard Time (UTC-3)
+                    </SelectItem>
+                    <SelectItem value="utc-2">
+                      South Georgia Time (UTC-2)
+                    </SelectItem>
                     <SelectItem value="utc-1">Azores Time (UTC-1)</SelectItem>
-                    <SelectItem value="utc+0">Greenwich Mean Time (UTC+0)</SelectItem>
-                    <SelectItem value="utc+1">Central European Time (UTC+1)</SelectItem>
-                    <SelectItem value="utc+2">Eastern European Time (UTC+2)</SelectItem>
+                    <SelectItem value="utc+0">
+                      Greenwich Mean Time (UTC+0)
+                    </SelectItem>
+                    <SelectItem value="utc+1">
+                      Central European Time (UTC+1)
+                    </SelectItem>
+                    <SelectItem value="utc+2">
+                      Eastern European Time (UTC+2)
+                    </SelectItem>
                     <SelectItem value="utc+3">Moscow Time (UTC+3)</SelectItem>
-                    <SelectItem value="utc+4">Gulf Standard Time (UTC+4)</SelectItem>
-                    <SelectItem value="utc+5">Pakistan Standard Time (UTC+5)</SelectItem>
-                    <SelectItem value="utc+5.5">Indian Standard Time (UTC+5:30)</SelectItem>
-                    <SelectItem value="utc+6">Bangladesh Standard Time (UTC+6)</SelectItem>
-                    <SelectItem value="utc+7">Indochina Time (UTC+7)</SelectItem>
-                    <SelectItem value="utc+8">China Standard Time (UTC+8)</SelectItem>
-                    <SelectItem value="utc+9">Japan Standard Time (UTC+9)</SelectItem>
-                    <SelectItem value="utc+10">Australian Eastern Standard Time (UTC+10)</SelectItem>
-                    <SelectItem value="utc+11">Solomon Islands Time (UTC+11)</SelectItem>
-                    <SelectItem value="utc+12">New Zealand Standard Time (UTC+12)</SelectItem>
+                    <SelectItem value="utc+4">
+                      Gulf Standard Time (UTC+4)
+                    </SelectItem>
+                    <SelectItem value="utc+5">
+                      Pakistan Standard Time (UTC+5)
+                    </SelectItem>
+                    <SelectItem value="utc+5.5">
+                      Indian Standard Time (UTC+5:30)
+                    </SelectItem>
+                    <SelectItem value="utc+6">
+                      Bangladesh Standard Time (UTC+6)
+                    </SelectItem>
+                    <SelectItem value="utc+7">
+                      Indochina Time (UTC+7)
+                    </SelectItem>
+                    <SelectItem value="utc+8">
+                      China Standard Time (UTC+8)
+                    </SelectItem>
+                    <SelectItem value="utc+9">
+                      Japan Standard Time (UTC+9)
+                    </SelectItem>
+                    <SelectItem value="utc+10">
+                      Australian Eastern Standard Time (UTC+10)
+                    </SelectItem>
+                    <SelectItem value="utc+11">
+                      Solomon Islands Time (UTC+11)
+                    </SelectItem>
+                    <SelectItem value="utc+12">
+                      New Zealand Standard Time (UTC+12)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -180,7 +250,9 @@ export default function SettingsPage() {
             <Card className="md:col-span-2">
               <CardHeader>
                 <CardTitle>Security Settings</CardTitle>
-                <CardDescription>Manage your account's security settings</CardDescription>
+                <CardDescription>
+                  Manage your account's security settings
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -197,7 +269,9 @@ export default function SettingsPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch id="two-factor" />
-                  <Label htmlFor="two-factor">Enable Two-Factor Authentication</Label>
+                  <Label htmlFor="two-factor">
+                    Enable Two-Factor Authentication
+                  </Label>
                 </div>
               </CardContent>
               <CardFooter>
@@ -208,15 +282,35 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Login History</CardTitle>
-                <CardDescription>Recent login activities on your account</CardDescription>
+                <CardDescription>
+                  Recent login activities on your account
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
-                  { date: "2023-07-20", time: "14:30 UTC", ip: "192.168.1.1", location: "New York, USA" },
-                  { date: "2023-07-19", time: "09:15 UTC", ip: "10.0.0.1", location: "London, UK" },
-                  { date: "2023-07-18", time: "22:45 UTC", ip: "172.16.0.1", location: "Tokyo, Japan" },
+                  {
+                    date: "2023-07-20",
+                    time: "14:30 UTC",
+                    ip: "192.168.1.1",
+                    location: "New York, USA",
+                  },
+                  {
+                    date: "2023-07-19",
+                    time: "09:15 UTC",
+                    ip: "10.0.0.1",
+                    location: "London, UK",
+                  },
+                  {
+                    date: "2023-07-18",
+                    time: "22:45 UTC",
+                    ip: "172.16.0.1",
+                    location: "Tokyo, Japan",
+                  },
                 ].map((login, index) => (
-                  <div key={index} className="flex justify-between items-center text-sm">
+                  <div
+                    key={index}
+                    className="flex justify-between items-center text-sm"
+                  >
                     <span>
                       {login.date} {login.time}
                     </span>
@@ -230,15 +324,35 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Active Sessions</CardTitle>
-                <CardDescription>Currently active sessions on your account</CardDescription>
+                <CardDescription>
+                  Currently active sessions on your account
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
-                  { device: "Laptop", browser: "Chrome", os: "Windows 10", icon: Laptop },
-                  { device: "Smartphone", browser: "Safari", os: "iOS 15", icon: Smartphone },
-                  { device: "Tablet", browser: "Firefox", os: "Android 12", icon: Tablet },
+                  {
+                    device: "Laptop",
+                    browser: "Chrome",
+                    os: "Windows 10",
+                    icon: Laptop,
+                  },
+                  {
+                    device: "Smartphone",
+                    browser: "Safari",
+                    os: "iOS 15",
+                    icon: Smartphone,
+                  },
+                  {
+                    device: "Tablet",
+                    browser: "Firefox",
+                    os: "Android 12",
+                    icon: Tablet,
+                  },
                 ].map((session, index) => (
-                  <div key={index} className="flex items-center justify-between text-sm">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between text-sm"
+                  >
                     <span className="flex items-center">
                       <session.icon className="mr-2 h-4 w-4" />
                       {session.device}
@@ -259,7 +373,9 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Preferences</CardTitle>
-              <CardDescription>Customize your dashboard experience</CardDescription>
+              <CardDescription>
+                Customize your dashboard experience
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -355,7 +471,9 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Notification Settings</CardTitle>
-              <CardDescription>Manage how you receive notifications</CardDescription>
+              <CardDescription>
+                Manage how you receive notifications
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -366,26 +484,41 @@ export default function SettingsPage() {
                       id="email-notifications"
                       defaultChecked={settings.notifications.email}
                       onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, email: e.target.checked })
+                        updateNotificationSettings({
+                          ...settings.notifications,
+                          email: (e.target as HTMLInputElement).checked,
+                        })
                       }
                     />
-                    <Label htmlFor="email-notifications">Email Notifications</Label>
+                    <Label htmlFor="email-notifications">
+                      Email Notifications
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="push-notifications"
                       defaultChecked={settings.notifications.push}
                       onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, push: e.target.checked })
+                        updateNotificationSettings({
+                          ...settings.notifications,
+                          push: (e.target as HTMLInputElement).checked,
+                        })
                       }
                     />
-                    <Label htmlFor="push-notifications">Push Notifications</Label>
+                    <Label htmlFor="push-notifications">
+                      Push Notifications
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="sms-notifications"
                       defaultChecked={settings.notifications.sms}
-                      onChange={(e) => updateNotificationSettings({ ...settings.notifications, sms: e.target.checked })}
+                      onChange={(e) =>
+                        updateNotificationSettings({
+                          ...settings.notifications,
+                          sms: (e.target as HTMLInputElement).checked,
+                        })
+                      }
                     />
                     <Label htmlFor="sms-notifications">SMS Notifications</Label>
                   </div>
@@ -397,7 +530,11 @@ export default function SettingsPage() {
                       id="account-activity"
                       defaultChecked={settings.notifications.accountActivity}
                       onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, accountActivity: e.target.checked })
+                        updateNotificationSettings({
+                          ...settings.notifications,
+                          accountActivity: (e.target as HTMLInputElement)
+                            .checked,
+                        })
                       }
                     />
                     <Label htmlFor="account-activity">Account Activity</Label>
@@ -407,17 +544,25 @@ export default function SettingsPage() {
                       id="new-features"
                       defaultChecked={settings.notifications.newFeatures}
                       onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, newFeatures: e.target.checked })
+                        updateNotificationSettings({
+                          ...settings.notifications,
+                          newFeatures: (e.target as HTMLInputElement).checked,
+                        })
                       }
                     />
-                    <Label htmlFor="new-features">New Features and Updates</Label>
+                    <Label htmlFor="new-features">
+                      New Features and Updates
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="marketing"
                       defaultChecked={settings.notifications.marketing}
                       onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, marketing: e.target.checked })
+                        updateNotificationSettings({
+                          ...settings.notifications,
+                          marketing: (e.target as HTMLInputElement).checked,
+                        })
                       }
                     />
                     <Label htmlFor="marketing">Marketing and Promotions</Label>
@@ -425,10 +570,21 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="notification-frequency">Notification Frequency</Label>
+                <Label htmlFor="notification-frequency">
+                  Notification Frequency
+                </Label>
                 <Select
                   value={settings.notifications.frequency}
-                  onValueChange={(value) => updateNotificationSettings({ ...settings.notifications, frequency: value })}
+                  onValueChange={(value) =>
+                    updateNotificationSettings({
+                      ...settings.notifications,
+                      frequency: value as
+                        | "real-time"
+                        | "daily"
+                        | "weekly"
+                        | undefined,
+                    })
+                  }
                 >
                   <SelectTrigger id="notification-frequency">
                     <SelectValue placeholder="Select Frequency" />
@@ -443,14 +599,24 @@ export default function SettingsPage() {
               <div className="space-y-2">
                 <Label htmlFor="quiet-hours-start">Quiet Hours</Label>
                 <div className="flex items-center space-x-2">
-                  <Input id="quiet-hours-start" type="time" defaultValue="22:00" />
+                  <Input
+                    id="quiet-hours-start"
+                    type="time"
+                    defaultValue="22:00"
+                  />
                   <span>to</span>
-                  <Input id="quiet-hours-end" type="time" defaultValue="07:00" />
+                  <Input
+                    id="quiet-hours-end"
+                    type="time"
+                    defaultValue="07:00"
+                  />
                 </div>
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSaveNotifications}>Save Notification Settings</Button>
+              <Button onClick={handleSaveNotifications}>
+                Save Notification Settings
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -459,7 +625,9 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Privacy Settings</CardTitle>
-              <CardDescription>Manage your privacy and data settings</CardDescription>
+              <CardDescription>
+                Manage your privacy and data settings
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-4 md:grid-cols-2">
@@ -469,22 +637,34 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="analytics-sharing">Share analytics data</Label>
+                      <Label htmlFor="analytics-sharing">
+                        Share analytics data
+                      </Label>
                       <Switch
                         id="analytics-sharing"
                         checked={settings.privacy.analyticsSharing}
                         onChange={(e) =>
-                          updatePrivacySettings({ ...settings.privacy, analyticsSharing: e.target.checked })
+                          updatePrivacySettings({
+                            ...settings.privacy,
+                            analyticsSharing: (e.target as HTMLInputElement)
+                              .checked,
+                          })
                         }
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="personalized-ads">Allow personalized ads</Label>
+                      <Label htmlFor="personalized-ads">
+                        Allow personalized ads
+                      </Label>
                       <Switch
                         id="personalized-ads"
                         checked={settings.privacy.personalizedAds}
                         onChange={(e) =>
-                          updatePrivacySettings({ ...settings.privacy, personalizedAds: e.target.checked })
+                          updatePrivacySettings({
+                            ...settings.privacy,
+                            personalizedAds: (e.target as HTMLInputElement)
+                              .checked,
+                          })
                         }
                       />
                     </div>
@@ -492,19 +672,29 @@ export default function SettingsPage() {
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Account Visibility</CardTitle>
+                    <CardTitle className="text-lg">
+                      Account Visibility
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <RadioGroup
                       value={settings.privacy.visibility}
-                      onValueChange={(value) => updatePrivacySettings({ ...settings.privacy, visibility: value })}
+                      onValueChange={(value) =>
+                        updatePrivacySettings({
+                          ...settings.privacy,
+                          visibility: value as "public" | "private" | undefined,
+                        })
+                      }
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="public" id="visibility-public" />
                         <Label htmlFor="visibility-public">Public</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="private" id="visibility-private" />
+                        <RadioGroupItem
+                          value="private"
+                          id="visibility-private"
+                        />
                         <Label htmlFor="visibility-private">Private</Label>
                       </div>
                     </RadioGroup>
@@ -519,7 +709,17 @@ export default function SettingsPage() {
                   <CardContent>
                     <Select
                       value={settings.privacy.dataRetention}
-                      onValueChange={(value) => updatePrivacySettings({ ...settings.privacy, dataRetention: value })}
+                      onValueChange={(value) =>
+                        updatePrivacySettings({
+                          ...settings.privacy,
+                          dataRetention: value as
+                            | "6-months"
+                            | "1-year"
+                            | "2-years"
+                            | "indefinite"
+                            | undefined,
+                        })
+                      }
                     >
                       <SelectTrigger id="data-retention">
                         <SelectValue placeholder="Select Data Retention Period" />
@@ -535,10 +735,14 @@ export default function SettingsPage() {
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Third-Party Integrations</CardTitle>
+                    <CardTitle className="text-lg">
+                      Third-Party Integrations
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Connected: Google Analytics, Facebook Pixel</p>
+                    <p className="text-sm text-muted-foreground">
+                      Connected: Google Analytics, Facebook Pixel
+                    </p>
                     <Button variant="outline">Manage Integrations</Button>
                   </CardContent>
                 </Card>
@@ -555,5 +759,5 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
