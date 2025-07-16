@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import dynamic from 'next/dynamic'
-import { ReturnData } from "@/lib/backtest-service"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ReturnData } from "@/types/backtest-service"
 
 // Dynamically import ApexCharts to prevent SSR issues with a loading fallback
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { 

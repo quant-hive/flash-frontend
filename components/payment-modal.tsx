@@ -10,7 +10,19 @@ import { CheckCircle2 } from "lucide-react"
 
 const steps = ["Payment Option", "Card Details", "OTP Verification", "Confirmation"]
 
-export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess }) {
+interface Bill {
+  amount: number
+  name: string
+}
+
+interface PaymentModalProps {
+  bill: Bill
+  isOpen: boolean
+  onClose: () => void
+  onPaymentSuccess: () => void
+}
+
+export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess }: PaymentModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [paymentOption, setPaymentOption] = useState("full")
   const [cardDetails, setCardDetails] = useState({ number: "", expiry: "", cvv: "" })

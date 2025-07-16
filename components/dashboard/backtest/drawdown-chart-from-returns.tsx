@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes"
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ReturnData } from "@/lib/backtest-service"
+import { ReturnData } from "@/types/backtest-service"
 
 interface DrawdownChartFromReturnsProps {
   data: ReturnData[]

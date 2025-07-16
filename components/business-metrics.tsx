@@ -64,7 +64,7 @@ export function BusinessMetrics() {
               <p className="text-xs text-muted-foreground">{metric.subtitle}</p>
               <div className="mt-2 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className={`px-2 py-1 rounded-full ${statusColors[metric.status]}`}>{metric.status}</span>
+                  <span className={`px-2 py-1 rounded-full ${statusColors[metric.status as keyof typeof statusColors]}`}>{metric.status}</span>
                   <span className="text-muted-foreground">
                     {metric.current} / {metric.target} {metric.unit}
                   </span>

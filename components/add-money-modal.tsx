@@ -9,7 +9,13 @@ import { CheckCircle2 } from "lucide-react"
 
 const steps = ["Amount", "Card Details", "OTP Verification", "Confirmation"]
 
-export function AddMoneyModal({ isOpen, onClose, onAddMoney }) {
+interface AddMoneyModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAddMoney: (amount: number) => void;
+}
+
+export function AddMoneyModal({ isOpen, onClose, onAddMoney }: AddMoneyModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [amount, setAmount] = useState("")
   const [cardDetails, setCardDetails] = useState({ number: "", expiry: "", cvv: "" })

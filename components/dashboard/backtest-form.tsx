@@ -14,8 +14,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { BacktestFormData, backtestService, databaseService } from "@/lib/backtest-service"
 import { Progress } from "@/components/ui/progress"
+import { backtestService, databaseService } from "@/lib/backtest-service"
+import { BacktestFormData } from "@/types/backtest-service"
 
 const backtestSchema = z.object({
   prompt: z.string().min(10, {

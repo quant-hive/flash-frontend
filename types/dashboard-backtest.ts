@@ -1,6 +1,6 @@
 // Types for dashboard backtest page
 export interface BacktestPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }

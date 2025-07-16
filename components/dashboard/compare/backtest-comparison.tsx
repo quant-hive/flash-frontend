@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, BarChart3, Download } from "lucide-react"
-import { BacktestResults, BacktestStatus, backtestService } from "@/lib/backtest-service"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { BacktestResults } from "@/types/backtest-service"
+import { backtestService } from "@/lib/backtest-service"
 
 interface BacktestComparisonProps {
   backtestIds: string[]

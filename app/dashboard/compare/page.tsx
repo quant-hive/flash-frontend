@@ -22,7 +22,7 @@ import {
 import { Search, ArrowRightFromLine } from "lucide-react";
 import { backtestService } from "@/lib/backtest-service";
 import { BacktestStatus } from "@/types/backtest-service";
-import { BacktestComparison } from "@/components/backtest-comparison";
+import { BacktestComparison } from "@/components/dashboard/compare/backtest-comparison";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { LoadingState } from "@/components/dashboard/compare/loading-state";

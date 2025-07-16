@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Legend } from "recharts"
-import { ReturnData } from "@/lib/backtest-service"
+import { ReturnData } from "@/types/backtest-service"
 
 interface ReturnsComparisonChartProps {
   data: ReturnData[]
