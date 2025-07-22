@@ -55,7 +55,7 @@ export function List03() {
               <div className="p-2 bg-gray-200 dark:bg-gray-600 rounded-full">
                 <event.icon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[event.status]}`}>
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[event.status as keyof typeof statusColors]}`}>
                 {event.status}
               </span>
             </div>

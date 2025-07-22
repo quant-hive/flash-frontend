@@ -61,7 +61,7 @@ export function UpcomingEvents() {
               <p className="text-xs text-muted-foreground">{event.subtitle}</p>
               <div className="mt-2 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className={`px-2 py-1 rounded-full ${statusColors[event.status]}`}>{event.status}</span>
+                  <span className={`px-2 py-1 rounded-full ${statusColors[event.status as keyof typeof statusColors]}`}>{event.status}</span>
                   <span className="text-muted-foreground">
                     <Calendar className="inline mr-1 h-3 w-3" />
                     {event.date}
