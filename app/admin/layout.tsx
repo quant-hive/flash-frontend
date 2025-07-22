@@ -2,8 +2,8 @@
 
 import type React from "react";
 import { useEffect } from "react";
-import { Sidebar } from "@/components/sidebar/sidebar";
-import { TopNav } from "@/components/top-nav/top-nav";
+import { Sidebar } from "@/components/sidebar";
+import { TopNav } from "@/components/top-nav";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 

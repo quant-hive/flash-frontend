@@ -18,12 +18,8 @@ export const authService = {
       }
     );
 
-    // Store the token in localStorage
     if (response.data.access_token) {
-      localStorage.setItem("accessToken", response.data.access_token);
-      // localStorage.setItem('user', JSON.stringify(response.data.user));
-      const user = await this.getUserDetails();
-      localStorage.setItem("user", JSON.stringify(user));
+      const user = await this.getUserDetails(response.data.access_token);
       return { ...response.data, user };
     } else {
       return response.data;
@@ -32,37 +28,38 @@ export const authService = {
 
   async register(data: RegisterData): Promise<AuthResponse> {
     const response = await axios.post<AuthResponse>("/api/auth/register", data);
+    return response.data;
+  },
 
-    // Store the token in localStorage
-    if (response.data.access_token) {
-      localStorage.setItem("accessToken", response.data.access_token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+  async getUserDetails(token?: string): Promise<UserDetails> {
+    const headers: any = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
     }
 
+    const response = await axios.get<UserDetails>("/api/auth/me", {
+      headers,
+    });
     return response.data;
   },
 
-  async getUserDetails(): Promise<UserDetails> {
-    const response = await axios.get<UserDetails>("/api/auth/me");
-    return response.data;
-  },
-
+  // These methods will be handled by Redux now
   logout(): void {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
+    // This will be handled by Redux dispatch
   },
 
   getCurrentUser(): any {
-    const user = localStorage.getItem("user");
-    return user ? JSON.parse(user) : null;
+    // This will be handled by Redux selectors
+    return null;
   },
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem("accessToken");
+    // This will be handled by Redux selectors
+    return false;
   },
 
   isAdmin(): boolean {
-    const user = this.getCurrentUser();
-    return user && user.role === "admin";
+    // This will be handled by Redux selectors
+    return false;
   },
 };

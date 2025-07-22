@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -20,7 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Eye, Download, Trash2, GitCompare } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { backtestService } from "@/lib/backtest-service";
+import { ApiService } from "@/lib/api-service";
+import { useUserBacktests } from "@/hooks/use-api";
 import { BacktestStatus } from "@/types/backtest-service";
 import { useAuth } from "@/contexts/auth-context";
 import { Progress } from "@/components/ui/progress";
@@ -30,117 +31,21 @@ import { formatDate } from "@/lib/utils";
 // import { /* types here if needed */ } from "@/types/dashboard-history"
 
 export default function HistoryPage() {
-  const [backtests, setBacktests] = useState<BacktestStatus[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [runningBacktests, setRunningBacktests] = useState<Set<string>>(
-    new Set()
-  );
   const [progressValues, setProgressValues] = useState<Record<string, number>>(
     {}
   );
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
-  const fetchBacktests = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await backtestService.getUserBacktests();
-      setBacktests(response);
-
-      // Track running backtests
-      const running = new Set<string>();
-      response.forEach((backtest) => {
-        if (backtest.status === "running" || backtest.status === "pending") {
-          running.add(backtest.backtest_id);
-          // Initialize progress for new running backtests
-          if (!progressValues[backtest.backtest_id]) {
-            setProgressValues((prev) => ({
-              ...prev,
-              [backtest.backtest_id]: 0,
-            }));
-          }
-        }
-      });
-      setRunningBacktests(running);
-    } catch (err: any) {
-      console.error("Error fetching backtests:", err);
-      setError(
-        err.response?.data?.detail || err.message || "Failed to fetch backtests"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Initial fetch
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchBacktests();
-    }
-  }, [isAuthenticated]);
-
-  // Poll for updates on running backtests
-  useEffect(() => {
-    if (runningBacktests.size === 0) return;
-
-    const pollInterval = setInterval(async () => {
-      try {
-        // Only poll if there are running backtests
-        if (runningBacktests.size > 0) {
-          // Get fresh status
-          const response = await backtestService.getUserBacktests();
-
-          // Update progresses
-          const newProgressValues = { ...progressValues };
-          let changed = false;
-
-          response.forEach((backtest) => {
-            if (runningBacktests.has(backtest.backtest_id)) {
-              // If status changed, update it
-              if (
-                backtest.status !== "running" &&
-                backtest.status !== "pending"
-              ) {
-                runningBacktests.delete(backtest.backtest_id);
-                changed = true;
-              } else {
-                // Simulate progress advancement for running backtests
-                newProgressValues[backtest.backtest_id] = Math.min(
-                  newProgressValues[backtest.backtest_id] + Math.random() * 5,
-                  95 // Cap at 95% until actually complete
-                );
-                changed = true;
-              }
-            }
-          });
-
-          if (changed) {
-            setProgressValues(newProgressValues);
-            setRunningBacktests(new Set(runningBacktests));
-
-            // If all are done, update the full list
-            if (runningBacktests.size === 0) {
-              setBacktests(response);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error polling backtest status:", error);
-      }
-    }, 2000);
-
-    return () => clearInterval(pollInterval);
-  }, [runningBacktests, progressValues]);
+  // Use the new hook for managing backtests
+  const { backtests, loading, error, refetch, deleteBacktest } =
+    useUserBacktests();
 
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this backtest?")) {
       try {
-        await backtestService.deleteBacktest(id);
-        // Refresh the list
-        fetchBacktests();
+        await deleteBacktest(id);
       } catch (error) {
         console.error("Error deleting backtest:", error);
         alert("Failed to delete backtest");
@@ -157,22 +62,22 @@ export default function HistoryPage() {
   };
 
   const handleDownload = (id: string, format: "csv" | "html" = "csv") => {
-    window.open(backtestService.getBacktestReportUrl(id, format), "_blank");
+    window.open(ApiService.getBacktestReportUrl(id, format), "_blank");
   };
 
-  const filteredBacktests = backtests.filter(
+  const filteredBacktests = (backtests || []).filter(
     (backtest) =>
       backtest.backtest_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (backtest.name &&
         backtest.name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  if (loading && backtests.length === 0) {
+  if (loading && (!backtests || backtests.length === 0)) {
     return <LoadingState />;
   }
 
   if (error) {
-    return <ErrorState error={error} onRetry={fetchBacktests} />;
+    return <ErrorState error={error} onRetry={refetch} />;
   }
 
   return (
@@ -204,7 +109,7 @@ export default function HistoryPage() {
               />
             </div>
 
-            {backtests.length === 0 ? (
+            {!backtests || backtests.length === 0 ? (
               <div className="text-center py-6">
                 <h3 className="text-lg font-medium">No backtests found</h3>
                 <p className="text-muted-foreground mt-2">

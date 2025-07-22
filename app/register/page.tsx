@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { Card } from "@/components/ui/card";
 import { LogoHeader } from "@/components/logo-header";
-import { RegisterForm } from "@/components/register/register-form";
+import { RegisterForm } from "@/components/register";
 
 // Register page with authentication redirect and modular components
 export default function RegisterPage() {
@@ -34,4 +34,4 @@ export default function RegisterPage() {
       </Card>
     </div>
   );
-} 
+}

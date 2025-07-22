@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { Card } from "@/components/ui/card";
 import { LogoHeader } from "@/components/logo-header";
-import { LoginForm } from "@/components/login/login-form";
+import { LoginForm } from "@/components/login";
 
 // Login page with authentication redirect and modular components
 export default function LoginPage() {
@@ -35,4 +35,4 @@ export default function LoginPage() {
       </Card>
     </div>
   );
-} 
+}

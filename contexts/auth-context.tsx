@@ -1,102 +1,105 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { ApiService } from "@/lib/api-service";
 import {
-  authService,
-} from "@/lib/auth-service";
-import { LoginCredentials, RegisterData, AuthResponse } from "@/types/auth-service";
+  LoginCredentials,
+  RegisterData,
+  AuthResponse,
+} from "@/types/auth-service";
 import { AuthContextType } from "@/types/auth-context";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import {
+  setCredentials,
+  logout as logoutAction,
+  setLoading,
+  selectCurrentUser,
+  selectIsAuthenticated,
+  selectIsLoading,
+  selectIsAdmin,
+  selectAccessToken,
+} from "@/lib/store/slices/authSlice";
 
 // Create the authentication context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Provider component to wrap the app and provide authentication state
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectCurrentUser);
+  const isLoading = useAppSelector(selectIsLoading);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isAdmin = useAppSelector(selectIsAdmin);
+  const accessToken = useAppSelector(selectAccessToken);
   const router = useRouter();
 
-  // Initialize authentication state from localStorage or fetch user details
+  // Initialize authentication state from Redux store or fetch user details
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         // Only run in the browser
         if (typeof window === "undefined") {
-          setIsLoading(false);
+          dispatch(setLoading(false));
           return;
         }
 
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-          // No token found, user is not authenticated
-          setUser(null);
-          setIsLoading(false);
-          return;
-        }
-
-        // Try to get user data from localStorage
-        let userData = null;
-        const userJson = localStorage.getItem("user");
-
-        if (userJson) {
+        // If we have a token but no user data, fetch user details
+        if (accessToken && !user) {
           try {
-            userData = JSON.parse(userJson);
-          } catch (e) {
-            // Ignore JSON parse errors
-          }
-        }
-
-        // If no valid user data in localStorage, fetch from API
-        if (!userData) {
-          try {
-            userData = await authService.getUserDetails();
+            const userData = await ApiService.getCurrentUser();
             if (userData) {
-              localStorage.setItem("user", JSON.stringify(userData));
+              dispatch(setCredentials({ user: userData, accessToken }));
             }
           } catch (error) {
             // Token might be invalid, clear it
-            authService.logout();
+            dispatch(logoutAction());
           }
+        } else if (!accessToken) {
+          // No token found, user is not authenticated
+          dispatch(setLoading(false));
+        } else {
+          // We have both token and user data
+          dispatch(setLoading(false));
         }
-
-        setUser(userData);
       } catch (error) {
         // Ignore errors
-      } finally {
-        setIsLoading(false);
+        dispatch(setLoading(false));
       }
     };
 
     initializeAuth();
-  }, []);
+  }, [dispatch, accessToken, user]);
 
-  // Login function: calls authService and updates user state
+  // Login function: calls ApiService and updates Redux state
   const login = async (
     credentials: LoginCredentials
   ): Promise<AuthResponse> => {
-    const response = await authService.login(credentials);
-    setUser(response.user);
+    const response = await ApiService.login(credentials);
+    dispatch(
+      setCredentials({
+        user: response.user,
+        accessToken: response.access_token,
+      })
+    );
     return response;
   };
 
-  // Register function: calls authService and updates user state
+  // Register function: calls ApiService and updates Redux state
   const register = async (data: RegisterData): Promise<AuthResponse> => {
-    const response = await authService.register(data);
-    setUser(response.user);
+    const response = await ApiService.register(data);
+    dispatch(
+      setCredentials({
+        user: response.user,
+        accessToken: response.access_token,
+      })
+    );
     return response;
   };
 
-  // Logout function: clears user state and navigates to login
+  // Logout function: clears Redux state and navigates to login
   const logout = () => {
-    authService.logout();
-    setUser(null);
+    dispatch(logoutAction());
     router.push("/login");
   };
 
@@ -104,8 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     user,
     isLoading,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === "admin",
+    isAuthenticated,
+    isAdmin,
     login,
     register,
     logout,

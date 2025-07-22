@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Search, ArrowRightFromLine } from "lucide-react";
-import { backtestService } from "@/lib/backtest-service";
+import { ApiService } from "@/lib/api-service";
 import { BacktestStatus } from "@/types/backtest-service";
 import { BacktestComparison } from "@/components/dashboard/compare/backtest-comparison";
 import { useAuth } from "@/contexts/auth-context";
@@ -58,7 +58,7 @@ export default function ComparePage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await backtestService.getUserBacktests();
+      const response = await ApiService.getUserBacktests();
 
       // Filter out backtests that are not completed
       const completedBacktests = response.filter(
