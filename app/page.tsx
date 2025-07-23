@@ -5,6 +5,7 @@ import { PrivacyDialog } from "@/components/home/privacy-dialog";
 import { TermsDialog } from "@/components/home/terms-dialog";
 import { CodeAnimation } from "@/components/home/code-animation";
 import { FeatureCards } from "@/components/home/featured-cards";
+import HoverTooltipWrapper from "@/components/tooltip";
 
 export default function Home() {
   return (
@@ -24,18 +25,22 @@ export default function Home() {
           </span>
         </nav>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link
-            href="/login"
-            className="text-sm font-medium hover:underline underline-offset-4 text-white"
-          >
-            Login
-          </Link>
-          <Link
-            href="/register"
-            className="text-sm font-medium hover:underline underline-offset-4 text-white"
-          >
-            Register
-          </Link>
+          <HoverTooltipWrapper tooltip="Login to your account">
+            <Link
+              href="/login"
+              className="text-sm font-medium hover:underline underline-offset-4 text-white"
+            >
+              Login
+            </Link>
+          </HoverTooltipWrapper>
+          <HoverTooltipWrapper tooltip="Create a new account">
+            <Link
+              href="/register"
+              className="text-sm font-medium hover:underline underline-offset-4 text-white"
+            >
+              Register
+            </Link>
+          </HoverTooltipWrapper>
         </nav>
       </header>
       <main className="flex-1 relative z-10">
@@ -53,10 +58,12 @@ export default function Home() {
               </div>
               <div className="space-x-4">
                 <Link href="/register">
-                  <Button className="inline-flex h-10 items-center justify-center rounded-md bg-yellow-400 text-black px-8 hover:bg-yellow-500">
-                    Get Started
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <HoverTooltipWrapper tooltip="Get started with a free account">
+                    <Button className="inline-flex h-10 items-center justify-center rounded-md bg-yellow-400 text-black px-8 hover:bg-yellow-500">
+                      Get Started
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </HoverTooltipWrapper>
                 </Link>
               </div>
             </div>
@@ -73,20 +80,24 @@ export default function Home() {
           © 2025 QuantHive. All rights reserved.
         </p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <TermsDialog
-            trigger={
-              <button className="text-xs text-gray-400 hover:underline underline-offset-4">
-                Terms of Service
-              </button>
-            }
-          />
-          <PrivacyDialog
-            trigger={
-              <button className="text-xs text-gray-400 hover:underline underline-offset-4">
-                Privacy
-              </button>
-            }
-          />
+          <HoverTooltipWrapper tooltip="Terms of Service">
+            <TermsDialog
+              trigger={
+                <button className="text-xs text-gray-400 hover:underline underline-offset-4">
+                  Terms of Service
+                </button>
+              }
+            />
+          </HoverTooltipWrapper>
+          <HoverTooltipWrapper tooltip="Privacy Policy">
+            <PrivacyDialog
+              trigger={
+                <button className="text-xs text-gray-400 hover:underline underline-offset-4">
+                  Privacy
+                </button>
+              }
+            />
+          </HoverTooltipWrapper>
         </nav>
       </footer>
     </div>
