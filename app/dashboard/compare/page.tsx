@@ -23,7 +23,7 @@ import { Search, ArrowRightFromLine } from "lucide-react";
 import { ApiService } from "@/lib/api-service";
 import { BacktestStatus } from "@/types/backtest-service";
 import { BacktestComparison } from "@/components/dashboard/compare/backtest-comparison";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/context/auth";
 import { useRouter } from "next/navigation";
 import { LoadingState } from "@/components/dashboard/compare/loading-state";
 import { ErrorState } from "@/components/dashboard/compare/error-state";

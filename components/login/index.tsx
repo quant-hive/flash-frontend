@@ -18,7 +18,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/context/auth";
 
 const loginSchema = z.object({
   username: z.string().min(3, { message: "Please enter a valid username" }),

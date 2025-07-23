@@ -4,7 +4,7 @@ import type React from "react";
 import { useEffect } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { TopNav } from "@/components/top-nav";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/context/auth";
 import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({

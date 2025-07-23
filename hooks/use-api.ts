@@ -206,7 +206,7 @@ export function useDatabaseInfo() {
 export function useAuthState() {
   // Import useAuth at the top of the file when needed
   // This hook is now deprecated in favor of using useAuth() context
-  // or directly using Redux selectors with useAppSelector
+  // or directly using Redux selectors with useSelector
 
   return {
     user: null,

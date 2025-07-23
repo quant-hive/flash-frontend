@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/auth-context";
-import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { updateUser, selectCurrentUser } from "@/lib/store/slices/authSlice";
+import { useAuth } from "@/context/auth";
+import { useDispatch, useSelector } from "@/lib/store";
+import { updateUser, selectCurrentUser } from "@/lib/store/slices/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -50,8 +50,8 @@ const securitySchema = z
   });
 
 export default function SettingsPage() {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(selectCurrentUser);
+  const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser);
   const [notifications, setNotifications] = useState({
     email: true,
     browser: true,

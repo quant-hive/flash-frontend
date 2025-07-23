@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BacktestForm } from "@/components/dashboard/backtest-form";
-import { BacktestResultsView } from "@/components/dashboard/backtest/backtest-results";
+import { BacktestForm } from "@/components/dashboard/backtest/form";
+import { BacktestResultsView } from "@/components/dashboard/backtest/results";
 import { backtestService } from "@/lib/backtest-service";
 import { BacktestResults } from "@/types/backtest-service";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/context/auth";
 
 export default function DashboardPage() {
   const [backtestId, setBacktestId] = useState<string | null>(null);

@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 import { ApiService } from "@/lib/api-service";
 import { useUserBacktests } from "@/hooks/use-api";
 import { BacktestStatus } from "@/types/backtest-service";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/context/auth";
 import { Progress } from "@/components/ui/progress";
 import { LoadingState } from "@/components/dashboard/history/loading-state";
 import { ErrorState } from "@/components/dashboard/history/error-state";

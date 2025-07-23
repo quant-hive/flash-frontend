@@ -1,14 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-import localForageStorage from "../storage/localforage-storage";
+import localForageStorage from "./storage";
 import { combineReducers } from "@reduxjs/toolkit";
-import authSlice from "./slices/authSlice";
-import settingsSlice from "./slices/settingsSlice";
+import authSlice from "./slices/auth";
+import settingsSlice from "./slices/settings";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 const persistConfig = {
   key: "root",
   storage: localForageStorage,
-  whitelist: ["auth", "settings"], // Only persist these slices
+  // whitelist: ["auth", "settings"], // Only persist these slices
 };
 
 const rootReducer = combineReducers({
@@ -18,7 +19,7 @@ const rootReducer = combineReducers({
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-export const store = configureStore({
+const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -28,7 +29,17 @@ export const store = configureStore({
     }),
 });
 
-export const persistor = persistStore(store);
+const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+const useAppDispatch = () => useDispatch<AppDispatch>();
+const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+export {
+  useAppDispatch as useDispatch,
+  useAppSelector as useSelector,
+  store,
+  persistor,
+};

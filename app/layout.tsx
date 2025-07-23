@@ -1,11 +1,13 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SettingsProvider } from "@/contexts/settings-context";
-import { AuthProvider } from "@/contexts/auth-context";
+import { SettingsProvider } from "@/context/settings";
+import { AuthProvider } from "@/context/auth";
 import { ReduxProvider } from "@/components/providers/redux-provider";
 import type React from "react";
+import { luxe_uno } from "@/lib/fonts";
+import Providers from "@/components/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,16 +27,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ReduxProvider>
-          <AuthProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <SettingsProvider>
-                <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
-              </SettingsProvider>
-            </ThemeProvider>
-          </AuthProvider>
-        </ReduxProvider>
+      <body className={`${luxe_uno.variable} relative`}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

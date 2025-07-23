@@ -6,9 +6,14 @@ module.exports = {
     "./components/**/*.{ts,tsx,js,jsx,mdx}",
     "./app/**/*.{ts,tsx,js,jsx,mdx}",
     "./src/**/*.{ts,tsx}",
-      "*.{js,ts,jsx,tsx,mdx}"
-],
+    "*.{js,ts,jsx,tsx,mdx}",
+  ],
   theme: {
+    extend: {
+      fontFamily: {
+        luxe_uno: ["var(--font-luxe_uno)"],
+      },
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -74,4 +79,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};

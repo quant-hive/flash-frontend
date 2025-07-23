@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/context/auth";
 import { Card } from "@/components/ui/card";
 import { LogoHeader } from "@/components/logo-header";
 import { LoginForm } from "@/components/login";
