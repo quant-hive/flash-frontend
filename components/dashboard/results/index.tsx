@@ -49,8 +49,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Papa from "papaparse";
-import { TradeReport } from "../trade-report";
-import { DrawdownChartFromReturns } from "../drawdown-chart-from-returns";
 import ReactMarkdown from "react-markdown";
 import {
   BacktestResults,
@@ -59,8 +57,10 @@ import {
   Trade,
 } from "@/types/backtest-service";
 import { backtestService, databaseService } from "@/lib/backtest-service";
-import { ReturnsComparisonChart } from "../returns-comparison-chart";
-import { MonthlyReturnsHeatmap } from "../monthly-returns-heatmap";
+import { ReturnsComparisonChart } from "../backtest/returns-comparison-chart";
+import { DrawdownChartFromReturns } from "../backtest/drawdown-chart-from-returns";
+import { TradeReport } from "../backtest/trade-report";
+import { MonthlyReturnsHeatmap } from "../backtest/monthly-returns-heatmap";
 
 // Register ChartJS components
 ChartJS.register(
