@@ -39,7 +39,7 @@ export function Sidebar() {
   };
 
   return (
-    <>
+    <aside className="flex h-full">
       <button
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-background rounded-md shadow-md"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -132,6 +132,6 @@ export function Sidebar() {
           </Button>
         </div>
       </div>
-    </>
+    </aside>
   );
 }

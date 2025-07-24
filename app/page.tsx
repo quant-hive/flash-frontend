@@ -9,7 +9,8 @@ import HoverTooltipWrapper from "@/components/tooltip";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white relative">
+    <></>
+    /* <div className="flex flex-col min-h-screen bg-black text-white relative">
       <CodeAnimation />
       <header className="px-4 lg:px-6 h-16 flex items-center border-b border-gray-800 relative z-10">
         <Link href="/" className="flex flex-col justify-center">
@@ -100,6 +101,6 @@ export default function Home() {
           </HoverTooltipWrapper>
         </nav>
       </footer>
-    </div>
+    </div> */
   );
 }

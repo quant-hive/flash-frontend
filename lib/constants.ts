@@ -1,5 +1,50 @@
 // Centralized constants for the app
 
+export const navItems = [
+  { label: "Flash", href: "#", hasTrademark: true },
+  { label: "Benchmark", href: "#", hasTrademark: false },
+  { label: "Careers", href: "#", hasTrademark: false },
+];
+
+export const menuItems = [
+  {
+    "About Us": [
+      {
+        title: "Explore",
+        hasTradeMark: false,
+        href: "#",
+        number: "01",
+        image: "/images/webp/menu-about-us-1.webp",
+      },
+      {
+        title: "Our Mission",
+        hasTradeMark: false,
+        href: "#",
+        number: "02",
+        image: "/images/webp/menu-about-us-2.webp",
+      },
+      {
+        title: "Contact",
+        hasTradeMark: false,
+        href: "#",
+        number: "03",
+        image: "/images/webp/menu-about-us-3.webp",
+      },
+    ],
+  },
+  {
+    Prouducts: [
+      {
+        title: "Flash",
+        hasTradeMark: true,
+        href: "#",
+        number: "01",
+        image: "/images/webp/menu-products-1.webp",
+      },
+    ],
+  },
+];
+
 export const defaultAvatars = [
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9439775.jpg-4JVJWOjPksd3DtnBYJXoWHA5lc1DU9.jpeg",
   "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/375238645_11475210.jpg-lU8bOe6TLt5Rv51hgjg8NT8PsDBmvN.jpeg",

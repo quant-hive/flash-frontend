@@ -3,7 +3,6 @@ import { AuthProvider } from "@/context/auth";
 import { ReduxProvider } from "./redux";
 import { ThemeProvider } from "./theme";
 import { SettingsProvider } from "@/context/settings";
-import { TooltipProvider } from "../ui/tooltip";
 import { CursorProvider } from "./cursor";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -13,9 +12,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <ReduxProvider>
           <AuthProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <SettingsProvider>
-                <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
-              </SettingsProvider>
+              <SettingsProvider> {children}</SettingsProvider>
             </ThemeProvider>
           </AuthProvider>
         </ReduxProvider>

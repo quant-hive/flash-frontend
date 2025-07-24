@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/sidebar";
 import { TopNav } from "@/components/top-nav";
 import { useAuth } from "@/context/auth";
 import { useRouter } from "next/navigation";
+import ActionBar from "@/components/actionbar";
 
 export default function DashboardLayout({
   children,
@@ -37,14 +38,18 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar />
+    <main className="flex flex-col h-screen p-[38px] w-full">
+      <ActionBar />
+      <div className="flex w-full h-full bg-background border-1">
+        <Sidebar />
+        {/* 
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopNav />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6">
           {children}
         </main>
+      </div> */}
       </div>
-    </div>
+    </main>
   );
 }

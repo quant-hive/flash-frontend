@@ -37,25 +37,31 @@
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 100%;
+
+    --button: 0 0% 1%;
+    --button-foreground: 0 0% 100%;
+    --button-focus: 0 0% 2%;
 
     --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted-foreground: 0 0% 17%;
 
-    --popover: 0 0% 0%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 21%;
+    --popover-background: 0 0% 15%;
 
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 14%;
+    --card-border: 0 0% 16%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
+    --border: 0 0% 16%;
+    --input: 0 0% 35%;
 
-    --primary: 0 0% 98%;
+    --primary: 0 0% 100%;
     --primary-foreground: 0 0% 5%;
 
-    --secondary: 0 0% 15%;
+    --secondary: 0 0% 22%;
     --secondary-foreground: 0 0% 98%;
 
     --accent: 0 0% 20%;
@@ -67,6 +73,15 @@
     --ring: 0 0% 20%;
 
     --radius: 0.5rem;
+
+    --radio-background: 0 0% 12%;
+    --radio-border: 0 0% 18%;
+    --radio-active-foreground: linear-gradient(135deg, #94C6FF 0%, #688BB3 32%, #94C6FF 66%, #5C7DA1 100%);
+    --radio-active-border: linear-gradient(180deg, #94C6FF 0%, #6082A8, #94C6FF 75%, #6082A8 100%);
+
+    --draggable-border: linear-gradient(-28deg, #94C6FF 0%, #597899 33%, #94C6FF 66%, #597899 100%);
+    --draggable-up-arrow: linear-gradient(118deg, #94C6FF 0%, #597899 50%, #94C6FF 75%, #597899 100%);
+    --draggable-down-arrow: linear-gradient(62deg, #94C6FF 0%, #597899 50%, #94C6FF 75%, #597899 100%);
   }
 }
 
@@ -74,6 +89,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -81,9 +97,12 @@
 }
 
 @keyframes blink {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0;
   }
