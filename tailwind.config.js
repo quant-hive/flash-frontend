@@ -26,6 +26,11 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        button: {
+          DEFAULT: "hsl(var(--button))",
+          foreground: "hsl(var(--button-foreground))",
+          focus: "hsl(var(--button-focus))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -49,10 +54,23 @@ module.exports = {
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
+          background: "hsl(var(--popover-background))",
         },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+          border: "hsl(var(--card-border))",
+        },
+        radio: {
+          background: "hsl(var(--radio-background))",
+          border: "hsl(var(--radio-border))",
+          "active-foreground": "var(--radio-active-foreground)",
+          "active-border": "var(--radio-active-border)",
+        },
+        draggable: {
+          border: "var(--draggable-border)",
+          "up-arrow": "var(--draggable-up-arrow)",
+          "down-arrow": "var(--draggable-down-arrow)",
         },
       },
       borderRadius: {
@@ -89,6 +107,12 @@ module.exports = {
           "linear-gradient(90deg, #00254F , #003F87 , #004CA3 , #003470 100%)",
         tooltip_text_gradient:
           "linear-gradient(90deg, #B5D8FF , #96C7FF , #A3CEFF 100%)",
+        profile_gradient:
+          "linear-gradient(180deg, #94C6FF 0%, #5A9BE6 31%, #94C6FF 67%, #477AB5 100%)",
+        user_head_gradient:
+          "linear-gradient(180deg, #94C6FF 0%, #5A9BE6 31%, #94C6FF 67%, #477AB5 100%)",
+        pro_text_gradient:
+          "linear-gradient(90deg, #659CD6 0%, #A3CEFF 34%, #8FC3FF 66%, #4F6782 100%)",
       },
     },
   },

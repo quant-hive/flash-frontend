@@ -40,7 +40,7 @@ export default function DashboardLayout({
   return (
     <main className="flex flex-col h-screen p-[38px] w-full">
       <ActionBar />
-      <div className="flex w-full h-full bg-background border-1">
+      <div className="flex w-full h-full bg-background border-1 rounded-xl">
         <Sidebar />
         {/* 
       <div className="flex-1 flex flex-col overflow-hidden">

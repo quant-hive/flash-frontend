@@ -1,0 +1,251 @@
+import React from "react";
+
+const ProIcon = ({ width, height }: { width: number; height: number }) => {
+  return (
+    <svg
+      width={width | 47}
+      height={height | 35}
+      viewBox="0 0 47 35"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g filter="url(#filter0_f_2519_3202)">
+        <circle cx="32" cy="20" r="4" fill="#3383DE" />
+      </g>
+      <g filter="url(#filter1_f_2519_3202)">
+        <circle cx="14.5" cy="14.5" r="3.5" fill="#2A8EFF" />
+      </g>
+      <path
+        d="M34.5 10.5V19.543L32.293 21.75H11.5V12.7334L12.7988 11.6514L14.4111 10.5H34.5Z"
+        fill="url(#paint0_linear_2519_3202)"
+        stroke="#303030"
+      />
+      <mask
+        id="mask0_2519_3202"
+        style={{ maskType: "alpha" }}
+        maskUnits="userSpaceOnUse"
+        x="11"
+        y="10"
+        width="24"
+        height="13"
+      >
+        <path
+          d="M34.5 10.5V19.543L32.293 21.75H11.5V12.7334L12.7988 11.6514L14.4111 10.5H34.5Z"
+          stroke="#303030"
+        />
+      </mask>
+      <g mask="url(#mask0_2519_3202)">
+        <path
+          d="M34.5 10.5V19.543L32.293 21.75H11.5V12.7334L12.7988 11.6514L14.4111 10.5H34.5Z"
+          stroke="#303030"
+        />
+        <g filter="url(#filter2_f_2519_3202)">
+          <ellipse cx="13.5" cy="13" rx="6.5" ry="6" fill="#3383DE" />
+        </g>
+        <g filter="url(#filter3_f_2519_3202)">
+          <circle cx="33.5" cy="22.5" r="6.5" fill="#288DFF" />
+        </g>
+        <g filter="url(#filter4_f_2519_3202)">
+          <circle cx="22" cy="14" r="16" fill="#3C8BE2" />
+        </g>
+      </g>
+      <mask
+        id="mask1_2519_3202"
+        style={{ maskType: "alpha" }}
+        maskUnits="userSpaceOnUse"
+        x="17"
+        y="13"
+        width="12"
+        height="7"
+      >
+        <path
+          d="M17.4531 19.0078V13.6094H19.7773C20.8633 13.6094 21.5977 14.3008 21.5977 15.3633C21.5977 16.4258 20.8633 17.1133 19.7773 17.1133H18.3164V19.0078H17.4531ZM18.3164 16.2539H19.7852C20.4492 16.2539 20.7344 15.9922 20.7344 15.3633C20.7344 14.7344 20.4492 14.4648 19.7852 14.4648H18.3164V16.2539ZM22.1406 19V15.125H22.9688V15.6641C23.1875 15.3281 23.5547 15.125 24.1016 15.125H24.3672V15.9922H24C23.2969 15.9922 23.0078 16.375 23.0078 16.9766V19H22.1406ZM26.625 19.0781C25.4766 19.0781 24.5781 18.1953 24.5781 17.0625C24.5781 15.9297 25.4766 15.0469 26.625 15.0469C27.7656 15.0469 28.6641 15.9297 28.6641 17.0625C28.6641 18.1953 27.7656 19.0781 26.625 19.0781ZM25.4453 17.0625C25.4453 17.7578 25.9453 18.2656 26.625 18.2656C27.3047 18.2656 27.7969 17.7578 27.7969 17.0625C27.7969 16.3672 27.3047 15.8594 26.625 15.8594C25.9453 15.8594 25.4453 16.3672 25.4453 17.0625Z"
+          fill="#78B8FF"
+        />
+      </mask>
+      <g mask="url(#mask1_2519_3202)">
+        <path
+          d="M17.4531 19.0078V13.6094H19.7773C20.8633 13.6094 21.5977 14.3008 21.5977 15.3633C21.5977 16.4258 20.8633 17.1133 19.7773 17.1133H18.3164V19.0078H17.4531ZM18.3164 16.2539H19.7852C20.4492 16.2539 20.7344 15.9922 20.7344 15.3633C20.7344 14.7344 20.4492 14.4648 19.7852 14.4648H18.3164V16.2539ZM22.1406 19V15.125H22.9688V15.6641C23.1875 15.3281 23.5547 15.125 24.1016 15.125H24.3672V15.9922H24C23.2969 15.9922 23.0078 16.375 23.0078 16.9766V19H22.1406ZM26.625 19.0781C25.4766 19.0781 24.5781 18.1953 24.5781 17.0625C24.5781 15.9297 25.4766 15.0469 26.625 15.0469C27.7656 15.0469 28.6641 15.9297 28.6641 17.0625C28.6641 18.1953 27.7656 19.0781 26.625 19.0781ZM25.4453 17.0625C25.4453 17.7578 25.9453 18.2656 26.625 18.2656C27.3047 18.2656 27.7969 17.7578 27.7969 17.0625C27.7969 16.3672 27.3047 15.8594 26.625 15.8594C25.9453 15.8594 25.4453 16.3672 25.4453 17.0625Z"
+          fill="#78B8FF"
+        />
+        <g filter="url(#filter5_f_2519_3202)">
+          <circle cx="17" cy="14" r="3" fill="#3383DE" />
+        </g>
+        <g filter="url(#filter6_f_2519_3202)">
+          <circle cx="28" cy="19" r="3" fill="#288DFF" />
+        </g>
+      </g>
+      <circle cx="16.5" cy="7.5" r="0.5" fill="#93C6FF" />
+      <circle cx="15.7" cy="26.7" r="0.7" fill="#93C6FF" />
+      <circle cx="25.5" cy="25.5" r="0.5" fill="#93C6FF" />
+      <circle cx="27.5" cy="6.5" r="0.5" fill="#93C6FF" />
+      <circle cx="33.4" cy="24.4" r="0.4" fill="#93C6FF" />
+      <circle cx="9.5" cy="23.5" r="0.5" fill="#93C6FF" />
+      <circle cx="32.6" cy="4.6" r="0.6" fill="#93C6FF" />
+      <circle cx="11.75" cy="5.75" r="0.75" fill="#93C6FF" />
+      <defs>
+        <filter
+          id="filter0_f_2519_3202"
+          x="17"
+          y="5"
+          width="30"
+          height="30"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="5.5"
+            result="effect1_foregroundBlur_2519_3202"
+          />
+        </filter>
+        <filter
+          id="filter1_f_2519_3202"
+          x="0"
+          y="0"
+          width="29"
+          height="29"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="5.5"
+            result="effect1_foregroundBlur_2519_3202"
+          />
+        </filter>
+        <filter
+          id="filter2_f_2519_3202"
+          x="3.5"
+          y="3.5"
+          width="20"
+          height="19"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="1.75"
+            result="effect1_foregroundBlur_2519_3202"
+          />
+        </filter>
+        <filter
+          id="filter3_f_2519_3202"
+          x="23"
+          y="12"
+          width="21"
+          height="21"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="2"
+            result="effect1_foregroundBlur_2519_3202"
+          />
+        </filter>
+        <filter
+          id="filter4_f_2519_3202"
+          x="1"
+          y="-7"
+          width="42"
+          height="42"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="2.5"
+            result="effect1_foregroundBlur_2519_3202"
+          />
+        </filter>
+        <filter
+          id="filter5_f_2519_3202"
+          x="10.5"
+          y="7.5"
+          width="13"
+          height="13"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="1.75"
+            result="effect1_foregroundBlur_2519_3202"
+          />
+        </filter>
+        <filter
+          id="filter6_f_2519_3202"
+          x="21.5"
+          y="12.5"
+          width="13"
+          height="13"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="1.75"
+            result="effect1_foregroundBlur_2519_3202"
+          />
+        </filter>
+        <linearGradient
+          id="paint0_linear_2519_3202"
+          x1="11"
+          y1="9"
+          x2="33"
+          y2="21.5"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#00152C" />
+          <stop offset="0.807692" stopColor="#00428A" />
+          <stop offset="1" stopColor="#003066" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
+
+export default ProIcon;

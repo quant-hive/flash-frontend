@@ -38,7 +38,7 @@ export const useCursor = () => {
 export const CursorProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  let animationFrameId: number;
+  const animationFrameId = React.useRef<number>();
   const [position, setPosition] = useState<CursorPosition>({ x: 0, y: 0 });
   const [tooltip, setTooltip] = useState<TooltipData>({
     content: "",
@@ -49,9 +49,10 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
   const [isMouseInWindow, setIsMouseInWindow] = useState<boolean>(false); // Track if mouse is in window
   const isTouchDevice = useTouchDevice(); // Use the custom hook
   const tooltipRef = React.useRef<HTMLDivElement>(null);
+  const lastPosition = React.useRef<CursorPosition>({ x: 0, y: 0 });
 
   // Calculate tooltip position with boundary checking
-  const getTooltipPosition = () => {
+  const getTooltipPosition = React.useCallback(() => {
     const offset = 20;
     const buffer = 20; // Extra space to account for scrollbar and bottom
     let tooltipWidth = 200; // Default fallback
@@ -88,7 +89,7 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
     }
 
     return { top, left };
-  };
+  }, [position.x, position.y]);
 
   // Effect to handle dynamic cursor visibility when touch device status changes
   useEffect(() => {
@@ -109,8 +110,22 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
 
+      // Skip update if position hasn't changed significantly (reduce unnecessary re-renders)
+      const threshold = 1;
+      if (
+        Math.abs(clientX - lastPosition.current.x) < threshold &&
+        Math.abs(clientY - lastPosition.current.y) < threshold
+      ) {
+        return;
+      }
+
       // Queue DOM updates with requestAnimationFrame
-      animationFrameId = requestAnimationFrame(() => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+
+      animationFrameId.current = requestAnimationFrame(() => {
+        lastPosition.current = { x: clientX, y: clientY };
         setPosition({ x: clientX, y: clientY });
 
         // Mark that mouse is in the window
@@ -180,7 +195,10 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
       window.removeEventListener("focus", handleWindowFocus);
       window.removeEventListener("blur", handleWindowBlur);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      cancelAnimationFrame(animationFrameId);
+      
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
     };
   }, [isPageReady, isVisible, isTouchDevice, isMouseInWindow]);
 
@@ -217,18 +235,21 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
     };
   }, [isTouchDevice]);
 
-  const showTooltip = (content: string) => {
+  const showTooltip = React.useCallback((content: string) => {
     setTooltip({ content, visible: true });
-  };
+  }, []);
 
-  const hideTooltip = () => {
+  const hideTooltip = React.useCallback(() => {
     setTooltip({ content: "", visible: false });
-  };
+  }, []);
+
+  const contextValue = React.useMemo(
+    () => ({ position, tooltip, showTooltip, hideTooltip }),
+    [position, tooltip, showTooltip, hideTooltip]
+  );
 
   return (
-    <CursorContext.Provider
-      value={{ position, tooltip, showTooltip, hideTooltip }}
-    >
+    <CursorContext.Provider value={contextValue}>
       {/* Custom cursor */}
       {isVisible && !isTouchDevice && (
         <MousePointer2

@@ -1,10 +1,18 @@
 import React from "react";
 
-const Logo = ({ color }: { color?: string }) => {
+const Logo = ({
+  color,
+  width,
+  height,
+}: {
+  color?: string;
+  width?: string | number;
+  height?: string | number;
+}) => {
   return (
     <svg
-      width="100%"
-      height="100%"
+      width={width || "24"}
+      height={height || "24"}
       viewBox="0 0 153 196"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
