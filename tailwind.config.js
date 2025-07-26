@@ -107,12 +107,16 @@ module.exports = {
           "linear-gradient(90deg, #00254F , #003F87 , #004CA3 , #003470 100%)",
         tooltip_text_gradient:
           "linear-gradient(90deg, #B5D8FF , #96C7FF , #A3CEFF 100%)",
-        profile_gradient:
-          "linear-gradient(180deg, #94C6FF 0%, #5A9BE6 31%, #94C6FF 67%, #477AB5 100%)",
-        user_head_gradient:
-          "linear-gradient(180deg, #94C6FF 0%, #5A9BE6 31%, #94C6FF 67%, #477AB5 100%)",
+        blue_accent_gradient:
+          "linear-gradient(180deg, #93C6FF 0%, #599BE6 31%, #93C6FF 67%, #467AB5 100%)",
+        blue_accent_gradient_90deg:
+          "linear-gradient(90deg, #93C6FF 0%, #599BE6 31%, #93C6FF 67%, #467AB5 100%)",
         pro_text_gradient:
           "linear-gradient(90deg, #659CD6 0%, #A3CEFF 34%, #8FC3FF 66%, #4F6782 100%)",
+        logout_gradient:
+          "linear-gradient(90deg, #A3CEFF20 0%, #599BE620 31%, #A3CEFF20 67%, #467AB520 100%)",
+        logout_gradient_light:
+          "linear-gradient(90deg, #A3CEFF50 0%, #599BE650 31%, #A3CEFF50 67%, #467AB550 100%)",
       },
     },
   },

@@ -27,6 +27,7 @@ import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import CustomPopoverContent from "../custom-popover-content";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
@@ -43,11 +44,7 @@ export function Sidebar() {
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
-
-  const handleUserDialog = () => {
-    setIsUserDialogOpen((prev) => !prev);
-  };
+  const [isUserPopoverOpen, setisUserPopoverOpen] = useState(false);
 
   return (
     <aside className="relative flex rounded-l-xl overflow-hidden h-full">
@@ -169,7 +166,7 @@ export function Sidebar() {
                   </div>
 
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold tracking-wider -mt-1 bg-clip-text   bg-pro_text_gradient text-transparent">
+                    <span className="text-sm font-semibold tracking-wider -mt-1 bg-clip-text bg-pro_text_gradient text-transparent">
                       Discount - 50%
                     </span>
                     <span className="text-[0.74rem] text-[#4B6E93]">
@@ -189,35 +186,38 @@ export function Sidebar() {
 
             <hr className="border-muted-foreground rounded-full mb-2" />
 
-            <Popover open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
+            <Popover
+              open={isUserPopoverOpen}
+              onOpenChange={setisUserPopoverOpen}
+            >
               <PopoverTrigger asChild>
                 <button
                   className={cn(
-                    "flex flex-row items-center justify-between hover:bg-button-focus rounded-xl w-full pl-2.5 pr-1.5 py-1.5 transition-all duration-300",
-                    isUserDialogOpen &&
-                      "backdrop:bg-black/50 backdrop:backdrop-blur-md"
+                    "flex flex-row items-center justify-between hover:bg-button-focus rounded-xl w-full pl-2.5 pr-1.5 py-1.5 transition-all duration-300"
                   )}
                 >
-                  <div className="w-7 h-7 rounded-full flex items-center bg-profile_gradient justify-center p-0.5">
-                    <div className="bg-[#222222] h-full w-full rounded-full flex items-center justify-center">
-                      <User />
+                  <div className="flex flex-row items-center gap-2">
+                    <div className="w-8 h-8 rounded-full flex items-center bg-blue_accent_gradient justify-center p-0.5">
+                      <div className="bg-[#222222] h-full w-full rounded-full flex items-center justify-center">
+                        <User />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex flex-col items-start justify-between">
-                    <div className="text-sm">
-                      {user?.username
-                        ? user.username.length > 10
-                          ? user.username.substring(0, 10) + "..."
-                          : user.username
-                        : ""}
-                    </div>
-                    <div className="text-xs text-[#838383] text-ellipsis overflow-hidden">
-                      {user?.email
-                        ? user.email.length > 10
-                          ? user.email.substring(0, 12) + "..."
-                          : user.email
-                        : ""}
+                    <div className="flex flex-col items-start justify-between">
+                      <div className="text-sm">
+                        {user?.username
+                          ? user.username.length > 10
+                            ? user.username.substring(0, 10) + "..."
+                            : user.username
+                          : ""}
+                      </div>
+                      <div className="text-xs text-[#838383] text-ellipsis overflow-hidden">
+                        {user?.email
+                          ? user.email.length > 10
+                            ? user.email.substring(0, 12) + "..."
+                            : user.email
+                          : ""}
+                      </div>
                     </div>
                   </div>
 
@@ -225,55 +225,57 @@ export function Sidebar() {
                     size={20}
                     className={cn(
                       "transition-transform duration-300",
-                      isUserDialogOpen && "rotate-180"
+                      isUserPopoverOpen && "rotate-180"
                     )}
                   />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <h4 className="leading-none font-medium">Dimensions</h4>
-                    <p className="text-muted-foreground text-sm">
-                      Set the dimensions for the layer.
-                    </p>
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="width">Width</Label>
-                      <Input
-                        id="width"
-                        defaultValue="100%"
-                        className="col-span-2 h-8"
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="maxWidth">Max. width</Label>
-                      <Input
-                        id="maxWidth"
-                        defaultValue="300px"
-                        className="col-span-2 h-8"
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="height">Height</Label>
-                      <Input
-                        id="height"
-                        defaultValue="25px"
-                        className="col-span-2 h-8"
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="maxHeight">Max. height</Label>
-                      <Input
-                        id="maxHeight"
-                        defaultValue="none"
-                        className="col-span-2 h-8"
-                      />
-                    </div>
-                  </div>
+              <CustomPopoverContent>
+                <div className="flex flex-col w-full gap-3">
+                  <Link
+                    href="/profile"
+                    className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400 hover:underline hover:underline-offset-2"
+                  >
+                    My Profile
+                  </Link>
+
+                  <Link
+                    href="/notifications"
+                    className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400 hover:underline hover:underline-offset-2"
+                  >
+                    Notifications
+                  </Link>
+
+                  <Link
+                    href="/notifications"
+                    className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400 hover:underline hover:underline-offset-2"
+                  >
+                    Data & Privacy
+                  </Link>
+
+                  <Link
+                    href="/notifications"
+                    className="mb-4 flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400 hover:underline hover:underline-offset-2"
+                  >
+                    Other Settings
+                  </Link>
+
+                  <div className="h-0.5 rounded-full bg-blue_accent_gradient_90deg" />
+
+                  <Button
+                    className="w-full flex flex-row justify-between bg-logout_gradient hover:bg-logout_gradient_light font-semibold h-8 px-3 focus-visible:ring-white"
+                    onClick={() => {
+                      logout();
+                      router.push("/login");
+                    }}
+                  >
+                    <span className="font-semibold bg-clip-text text-transparent bg-blue_accent_gradient">
+                      Logout
+                    </span>
+                    <Power />
+                  </Button>
                 </div>
-              </PopoverContent>
+              </CustomPopoverContent>
             </Popover>
           </div>
         </div>
@@ -306,6 +308,40 @@ const User = () => {
       </defs>
       <circle cx="12" cy="7" r="4" />
       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+    </svg>
+  );
+};
+
+const Power = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="url(#powerIconGradient)"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="lucide lucide-power-icon lucide-power"
+    >
+      <defs>
+        <linearGradient
+          id="powerIconGradient"
+          x1="0%"
+          y1="0%"
+          x2="0%"
+          y2="100%"
+        >
+          <stop offset="0%" stopColor="#93C6FF" />
+          <stop offset="31%" stopColor="#599BE6" />
+          <stop offset="67%" stopColor="#93C6FF" />
+          <stop offset="100%" stopColor="#467AB5" />
+        </linearGradient>
+      </defs>
+      <path stroke="lightblue" d="M12 2v10" />
+      <path d="M18.4 6.6a9 9 0 1 1-12.77.04" />
     </svg>
   );
 };
