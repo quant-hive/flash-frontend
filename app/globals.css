@@ -56,7 +56,12 @@
     --card-border: 0 0% 16%;
 
     --border: 0 0% 16%;
+
     --input: 0 0% 35%;
+
+    --text: 0 0% 100%;
+    --muted-text: 0 0% 51%;
+    --muted-text-foreground: 0 0% 70%;
 
     --primary: 0 0% 100%;
     --primary-foreground: 0 0% 5%;

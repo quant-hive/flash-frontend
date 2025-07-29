@@ -80,8 +80,14 @@ const NavbarItems = () => {
 const Navbar = () => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
+  const [hasInitiallyAnimated, setHasInitiallyAnimated] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Set the initial animation flag on mount
+  useEffect(() => {
+    setHasInitiallyAnimated(true);
+  }, []);
 
   // Combined click outside handler for both navbar and menu
   useEffect(() => {
@@ -115,14 +121,20 @@ const Navbar = () => {
         className="absolute top-5 -translate-x-1/2 left-1/2 z-50"
       >
         <motion.nav
-          initial={{ opacity: 0, scaleX: 0, scaleY: 0 }}
+          initial={
+            hasInitiallyAnimated ? false : { opacity: 0, scaleX: 0, scaleY: 0 }
+          }
           animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
-          transition={{
-            duration: 0.3,
-            ease: "easeInOut",
-            opacity: { duration: 0.2 },
-            scale: { duration: 0.3 },
-          }}
+          transition={
+            hasInitiallyAnimated
+              ? { duration: 0 }
+              : {
+                  duration: 0.3,
+                  ease: "easeInOut",
+                  opacity: { duration: 0.2 },
+                  scale: { duration: 0.3 },
+                }
+          }
           style={{ transformOrigin: "center" }}
           className={`${
             isOpen ? "scale-105" : "hover:scale-105"
