@@ -1,3 +1,5 @@
+const { text } = require("stream/consumers");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -22,7 +24,11 @@ module.exports = {
       },
       colors: {
         border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
+        input: {
+          DEFAULT: "hsl(var(--input))",
+          background: "hsl(var(--input-background))",
+          placeholder: "hsl(var(--input-placeholder))",
+        },
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -118,7 +124,11 @@ module.exports = {
         logout_gradient:
           "linear-gradient(90deg, #A3CEFF20 0%, #599BE620 31%, #A3CEFF20 67%, #467AB520 100%)",
         logout_gradient_light:
-          "linear-gradient(90deg, #A3CEFF50 0%, #599BE650 31%, #A3CEFF50 67%, #467AB550 100%)",
+          "linear-gradient(90deg, #A3CEFF30 0%, #599BE630 31%, #A3CEFF30 67%, #467AB530 100%)",
+        new_chat_text_accent_gradient:
+          "linear-gradient(135deg, #5293DD 14%, #5293DD20 16%, #6BB0FF 29%, #6BB0FF20 49%, #3F8BE0 62%, #3F8BE020 75%, #8BC2FF 92%)",
+        text_accent_gradient:
+          "linear-gradient(135deg, #B9DAFF 0%, #75ACEA 100%)",
       },
     },
   },

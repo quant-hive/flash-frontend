@@ -16,63 +16,109 @@ export default function AdminDashboardPage() {
   const { user } = useAuth();
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Admin Dashboard</h2>
+    <div className="flex-1 space-y-8 p-2">
+      <div className="flex flex-col items-start justify-between space-y-2">
+        <h1 className="text-2xl tracking-wide">Admin Dashboard</h1>
+        <p className="text-muted-text">Welcome back, Admin {user?.name}!</p>
       </div>
-      <p className="text-muted-foreground">Welcome back, Admin {user?.name}!</p>
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+      <Tabs defaultValue="organizations" className="space-y-4">
+        <TabsList className="bg-card gap-2">
+          <TabsTrigger
+            value="organizations"
+            className="data-[state=active]:bg-button-focus text-button-foreground hover:bg-button-focus"
+          >
+            Organizations
+          </TabsTrigger>
+          <TabsTrigger
+            value="subscriptions"
+            className="data-[state=active]:bg-button-focus text-button-foreground hover:bg-button-focus"
+          >
+            Subscriptions
+          </TabsTrigger>
+          <TabsTrigger
+            value="purchases"
+            className="data-[state=active]:bg-button-focus text-button-foreground hover:bg-button-focus"
+          >
+            Purchases
+          </TabsTrigger>
+          <TabsTrigger
+            value="coupons"
+            className="data-[state=active]:bg-button-focus text-button-foreground hover:bg-button-focus"
+          >
+            Coupons
+          </TabsTrigger>
+          <TabsTrigger
+            value="api_keys"
+            className="data-[state=active]:bg-button-focus text-button-foreground hover:bg-button-focus"
+          >
+            API Keys
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <OverviewCards />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Activity Overview</CardTitle>
-                <CardDescription>
-                  System activity for the last 30 days.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                {/* Add chart component here if needed */}
-                <div className="flex h-full items-center justify-center">
-                  <p className="text-muted-foreground">
-                    Analytics data visualization goes here
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            <RecentEvents />
-          </div>
-        </TabsContent>
-        <TabsContent value="users" className="space-y-4">
+        <TabsContent value="organizations" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>User Management</CardTitle>
+              <CardTitle>Organization Management</CardTitle>
               <CardDescription>
-                View and manage all registered users
+                View and manage all registered organizations
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
-                User list will be displayed here
+              <p className="text-muted-text">
+                Organizations list will be displayed here
               </p>
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="settings" className="space-y-4">
+        <TabsContent value="subscriptions" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>System Settings</CardTitle>
-              <CardDescription>Configure system-wide settings</CardDescription>
+              <CardTitle>Subscriptions</CardTitle>
+              <CardDescription>Manage user subscriptions</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
-                Settings interface will be displayed here
+              <p className="text-muted-text">
+                Subscriptions interface will be displayed here
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="purchases" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Purchases</CardTitle>
+              <CardDescription>Manage user purchases</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-text">
+                Purchases interface will be displayed here
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="coupons" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Coupons</CardTitle>
+              <CardDescription>Manage discount coupons</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-text">
+                Coupons management interface will be displayed here
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="api_keys" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>API Keys</CardTitle>
+              <CardDescription>
+                Manage API keys for users and applications
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-text">
+                API keys management interface will be displayed here
               </p>
             </CardContent>
           </Card>

@@ -81,7 +81,7 @@ export function BacktestForm({ onBacktestSubmitted }: BacktestFormProps) {
     const loadData = async () => {
       try {
         const [tickers, dbInfo] = await Promise.all([
-          databaseService.getAvailableTickers(),
+          databaseService.getAvailableInstruments(),
           databaseService.getDatabaseInfo()
         ]);
         

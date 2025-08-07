@@ -58,11 +58,9 @@ export function Sidebar() {
         )}
       >
         <div className="flex flex-col">
-          <Link href="/dashboard" className="flex flex-col">
-            <div className="flex items-center text-xl">
-              Flash <sup className="text-[9px]">TM</sup>
-            </div>
-          </Link>
+          <div className="flex items-center text-xl select-none">
+            Flash <sup className="text-[9px]">TM</sup>
+          </div>
           {/* {isCollapsed && (
               <Link
                 href="/dashboard"
@@ -124,7 +122,7 @@ export function Sidebar() {
         </div>
 
         <div className="flex flex-col">
-          <div className="flex flex-col rounded-xl overflow-hidden border-2 border-[#2A2A2A] bg-[#222222] mb-8 shadow-lg">
+          <div className="flex flex-col rounded-xl overflow-hidden border-2 border-[#2A2A2A] bg-[#222222] mb-8 shadow-lg select-none">
             <div className="relative">
               <div className="absolute flex flex-col z-10 left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
                 <span className="text-2xl">
@@ -143,20 +141,20 @@ export function Sidebar() {
               />
             </div>
 
-            <div className="flex flex-col items-center justify-center px-2 py-2">
-              <div className="flex flex-col text-center mb-2">
+            <div className="flex flex-col items-center justify-center px-2 pt-1 pb-2">
+              <div className="flex flex-col text-center">
                 <span className="text-xs mt-1.5 mb-0.5">
                   You're now using Free Tier
                 </span>
-                <span className="text-[10px] text-[#838383] leading-tight">
+                <span className="text-[10px] text-[#838383] leading-tight text-balance">
                   Enjoy advanced features, beta versions, and prority tools in
                   the Pro Tier.
                 </span>
               </div>
 
-              <div className="flex flex-row pt-1 items-center border-2 border-[#1E4979] rounded-lg mt-2 bg-gradient-to-br from-[#004797]/[30%] via-[#1B86FF]/[30%] to-[#003978]/[30%] w-full">
+              <div className="flex flex-row pt-1 items-center border border-[#1E4979] rounded-lg mt-3 bg-gradient-to-br from-[#004797]/[30%] via-[#1B86FF]/[30%] to-[#003978]/[30%] w-full">
                 <div className="-ml-0.5">
-                  <ProIcon width={60} height={48} />
+                  <ProIcon width={54} height={42} />
                 </div>
 
                 <div className="flex flex-col">
@@ -222,36 +220,44 @@ export function Sidebar() {
               </button>
             </PopoverTrigger>
             <CustomPopoverContent>
-              <div className="flex flex-col w-full gap-3">
-                <Link
-                  href="/profile"
-                  className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400 hover:underline hover:underline-offset-2"
-                >
-                  My Profile
-                </Link>
+              <div className="flex flex-col w-full gap-1">
+                <div className="flex items-center justify-center w-full px-2 py-1 hover:bg-primary/5 rounded-md">
+                  <Link
+                    href="/profile"
+                    className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400"
+                  >
+                    My Profile
+                  </Link>
+                </div>
 
-                <Link
-                  href="/notifications"
-                  className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400 hover:underline hover:underline-offset-2"
-                >
-                  Notifications
-                </Link>
+                <div className="flex items-center justify-center w-full px-2 py-1 hover:bg-primary/5 rounded-md">
+                  <Link
+                    href="/notifications"
+                    className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400"
+                  >
+                    Notifications
+                  </Link>
+                </div>
 
-                <Link
-                  href="/notifications"
-                  className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400 hover:underline hover:underline-offset-2"
-                >
-                  Data & Privacy
-                </Link>
+                <div className="flex items-center justify-center w-full px-2 py-1 hover:bg-primary/5 rounded-md">
+                  <Link
+                    href="/notifications"
+                    className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400"
+                  >
+                    Data & Privacy
+                  </Link>
+                </div>
 
-                <Link
-                  href="/notifications"
-                  className="mb-4 flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400 hover:underline hover:underline-offset-2"
-                >
-                  Other Settings
-                </Link>
+                <div className="mb-4 flex items-center justify-center w-full px-2 py-1 hover:bg-primary/5 rounded-md">
+                  <Link
+                    href="/notifications"
+                    className="flex w-full font-semibold bg-clip-text text-transparent bg-blue_accent_gradient hover:decoration-blue-400"
+                  >
+                    Other Settings
+                  </Link>
+                </div>
 
-                <div className="h-0.5 rounded-full bg-blue_accent_gradient_90deg" />
+                <div className="mb-3 h-0.5 rounded-full bg-blue_accent_gradient_90deg" />
 
                 <Button
                   className="w-full flex flex-row justify-between bg-logout_gradient hover:bg-logout_gradient_light font-semibold h-8 px-3 focus-visible:ring-white"
@@ -330,7 +336,7 @@ const Power = () => {
           <stop offset="100%" stopColor="#467AB5" />
         </linearGradient>
       </defs>
-      <path stroke="lightblue" d="M12 2v10" />
+      <path stroke="lightblue" d="M12 4v8" />
       <path d="M18.4 6.6a9 9 0 1 1-12.77.04" />
     </svg>
   );

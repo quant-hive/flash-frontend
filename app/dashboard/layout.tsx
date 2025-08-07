@@ -59,8 +59,8 @@ export default function DashboardLayout({
       <ActionBar />
       <div className="flex flex-row h-full bg-background border-1 rounded-xl overflow-auto">
         <Sidebar />
-        <div className="flex flex-col flex-1 pl-4 pt-7 pr-4 pb-4">
-          {/* overflow-auto (for the belowd div); incase content overflows and scrolling is required */}
+        {/* overflow-auto (for the belowd div); incase content overflows and scrolling is required */}
+        <div className="flex flex-col flex-1 pl-4 pt-7 pr-4 pb-4 overflow-auto">
           <div className="flex flex-col flex-1">
             <Breadcrumb>
               <BreadcrumbList className="gap-1 sm:gap-1 font-light text-muted-text">
@@ -93,22 +93,23 @@ export default function DashboardLayout({
                 ))}
               </BreadcrumbList>
             </Breadcrumb>
-            <div className="mt-4 flex-1">{children}</div>
+            {children}
           </div>
+
           <footer className="mt-4 mr-4">
             <nav className="flex flex-row justify-end">
-              <ul className="text-secondary text-sm font-light">
-                <li className="inline-block mr-4">
+              <ul className="flex flex-row gap-6 text-secondary text-[12px] font-light">
+                <li className="inline-block">
                   <Link href="#" className="hover:text-primary">
                     Cookies Policy
                   </Link>
                 </li>
-                <li className="inline-block mr-4">
+                <li className="inline-block">
                   <Link href="#" className="hover:text-primary">
                     License
                   </Link>
                 </li>
-                <li className="inline-block mr-4">
+                <li className="inline-block">
                   <Link href="#" className="hover:text-primary">
                     Terms of Use
                   </Link>

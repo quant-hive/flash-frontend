@@ -17,7 +17,7 @@ const CustomPopoverContent = React.forwardRef<
       )}
       {...props}
     >
-      <div className="flex w-full bg-[#222222] rounded-[11px] p-4">
+      <div className="flex w-full bg-[#222222] rounded-[11.5px] py-4 px-3">
         {props.children}
       </div>
     </PopoverPrimitive.Content>

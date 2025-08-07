@@ -23,8 +23,12 @@ type TooltipData = {
 type CursorContextType = {
   position: CursorPosition;
   tooltip: TooltipData;
+  isVisible: boolean;
   showTooltip: (content: string) => void;
   hideTooltip: () => void;
+  showCursor: () => void;
+  hideCursor: () => void;
+  toggleCursor: () => void;
 };
 
 const CursorContext = createContext<CursorContextType | null>(null);
@@ -47,6 +51,8 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
   const [isVisible, setIsVisible] = useState<boolean>(false); // Start as false during page load
   const [isPageReady, setIsPageReady] = useState<boolean>(false);
   const [isMouseInWindow, setIsMouseInWindow] = useState<boolean>(false); // Track if mouse is in window
+  const [forceHidden, setForceHidden] = useState<boolean>(false); // Manual cursor visibility control
+  const [isDragging, setIsDragging] = useState<boolean>(false); // Track drag state
   const isTouchDevice = useTouchDevice(); // Use the custom hook
   const tooltipRef = React.useRef<HTMLDivElement>(null);
   const lastPosition = React.useRef<CursorPosition>({ x: 0, y: 0 });
@@ -101,15 +107,14 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
 
   // Effect to handle cursor visibility based on mouse presence in window
   useEffect(() => {
-    // Only show cursor if page is ready, not a touch device, and mouse is in window
-    const shouldBeVisible = isPageReady && !isTouchDevice && isMouseInWindow;
+    // Only show cursor if page is ready, not a touch device, mouse is in window, and not force hidden
+    const shouldBeVisible =
+      isPageReady && !isTouchDevice && isMouseInWindow && !forceHidden;
     setIsVisible(shouldBeVisible);
-  }, [isPageReady, isTouchDevice, isMouseInWindow]);
+  }, [isPageReady, isTouchDevice, isMouseInWindow, forceHidden]);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-
+    const updatePosition = (clientX: number, clientY: number) => {
       // Skip update if position hasn't changed significantly (reduce unnecessary re-renders)
       const threshold = 1;
       if (
@@ -133,6 +138,57 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
           setIsMouseInWindow(true);
         }
       });
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      updatePosition(clientX, clientY);
+    };
+
+    const handleDragOver = (e: DragEvent) => {
+      const { clientX, clientY } = e;
+      updatePosition(clientX, clientY);
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      // Only handle if it's a mouse pointer (not touch or pen)
+      if (e.pointerType === "mouse") {
+        const { clientX, clientY } = e;
+        updatePosition(clientX, clientY);
+      }
+    };
+
+    const handleDragStart = (e: DragEvent) => {
+      // Ensure cursor continues to track during drag operations
+      const { clientX, clientY } = e;
+      updatePosition(clientX, clientY);
+    };
+
+    const handleDrag = (e: DragEvent) => {
+      // Continue tracking during drag
+      const { clientX, clientY } = e;
+      // Only update if we have valid coordinates (drag events can have 0,0 coordinates)
+      if (clientX !== 0 || clientY !== 0) {
+        updatePosition(clientX, clientY);
+      }
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      setIsDragging(true);
+      const { clientX, clientY } = e;
+      updatePosition(clientX, clientY);
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      setIsDragging(false);
+      const { clientX, clientY } = e;
+      updatePosition(clientX, clientY);
+    };
+
+    // Enhanced mouse move handler that works even during drag operations
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      updatePosition(clientX, clientY);
     };
 
     const handleMouseLeave = () => {
@@ -178,6 +234,14 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
     }
 
     document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("pointermove", handlePointerMove);
+    document.addEventListener("dragstart", handleDragStart);
+    document.addEventListener("drag", handleDrag);
+    document.addEventListener("dragover", handleDragOver);
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mouseup", handleMouseUp);
+    // Add global mouse move listener that captures all mouse movements
+    window.addEventListener("mousemove", handleGlobalMouseMove, true);
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
     window.addEventListener("load", handlePageLoad);
@@ -188,6 +252,13 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("dragstart", handleDragStart);
+      document.removeEventListener("drag", handleDrag);
+      document.removeEventListener("dragover", handleDragOver);
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", handleGlobalMouseMove, true);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
       window.removeEventListener("load", handlePageLoad);
@@ -195,12 +266,12 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
       window.removeEventListener("focus", handleWindowFocus);
       window.removeEventListener("blur", handleWindowBlur);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      
+
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [isPageReady, isVisible, isTouchDevice, isMouseInWindow]);
+  }, [isPageReady, isVisible, isTouchDevice, isMouseInWindow, isDragging]);
 
   // Separate effect to handle global cursor styles based on touch device detection
   useEffect(() => {
@@ -235,6 +306,18 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
     };
   }, [isTouchDevice]);
 
+  const showCursor = React.useCallback(() => {
+    setForceHidden(false);
+  }, []);
+
+  const hideCursor = React.useCallback(() => {
+    setForceHidden(true);
+  }, []);
+
+  const toggleCursor = React.useCallback(() => {
+    setForceHidden((prev) => !prev);
+  }, []);
+
   const showTooltip = React.useCallback((content: string) => {
     setTooltip({ content, visible: true });
   }, []);
@@ -244,8 +327,26 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const contextValue = React.useMemo(
-    () => ({ position, tooltip, showTooltip, hideTooltip }),
-    [position, tooltip, showTooltip, hideTooltip]
+    () => ({
+      position,
+      tooltip,
+      isVisible,
+      showTooltip,
+      hideTooltip,
+      showCursor,
+      hideCursor,
+      toggleCursor,
+    }),
+    [
+      position,
+      tooltip,
+      isVisible,
+      showTooltip,
+      hideTooltip,
+      showCursor,
+      hideCursor,
+      toggleCursor,
+    ]
   );
 
   return (
