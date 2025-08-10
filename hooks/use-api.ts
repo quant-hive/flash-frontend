@@ -174,7 +174,7 @@ export function useDatabaseInfo() {
     setError(null);
     try {
       const [tickersData, infoData] = await Promise.all([
-        ApiService.getAvailableTickers(),
+        ApiService.getAvailableInstruments(),
         ApiService.getDatabaseInfo(),
       ]);
       setTickers(tickersData);

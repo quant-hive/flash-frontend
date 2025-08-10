@@ -140,8 +140,8 @@ export const backtestService = {
 
 // Database service
 export const databaseService = {
-  // Get available tickers
-  async getAvailableTickers(): Promise<string[]> {
+  // Get available instruments
+  async getAvailableInstruments(): Promise<string[]> {
     try {
       const response = await axiosInstance.get<TickerResponse>(
         "/api/database/tickers"

@@ -1,4 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  setAccessTokenCookie,
+  removeAccessTokenCookie,
+  getAccessTokenFromCookie,
+} from "@/lib/axios";
 
 interface User {
   id: string;
@@ -35,6 +40,9 @@ const authSlice = createSlice({
       state.accessToken = accessToken;
       state.isAuthenticated = true;
       state.isLoading = false;
+
+      // Set the access token in cookies (user data will stay in localStorage via Redux persist)
+      setAccessTokenCookie(accessToken);
     },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
@@ -43,12 +51,17 @@ const authSlice = createSlice({
     },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
+      // Set the access token in cookies
+      setAccessTokenCookie(action.payload);
     },
     logout: (state) => {
       state.user = null;
       state.accessToken = null;
       state.isAuthenticated = false;
       state.isLoading = false;
+
+      // Remove the access token from cookies
+      removeAccessTokenCookie();
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -56,6 +69,14 @@ const authSlice = createSlice({
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
+      }
+    },
+    // New action to initialize auth state from cookies
+    initializeFromCookie: (state) => {
+      const tokenFromCookie = getAccessTokenFromCookie();
+      if (tokenFromCookie && !state.accessToken) {
+        state.accessToken = tokenFromCookie;
+        // Don't set isAuthenticated to true until we verify the token
       }
     },
   },
@@ -68,6 +89,7 @@ export const {
   logout,
   setLoading,
   updateUser,
+  initializeFromCookie,
 } = authSlice.actions;
 
 export default authSlice.reducer;

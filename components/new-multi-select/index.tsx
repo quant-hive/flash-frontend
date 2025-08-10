@@ -909,14 +909,14 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-between w-full mx-auto">
-                <span className="text-sm text-input-placeholder">
+              <div className="group flex items-center justify-between w-full mx-auto">
+                <span className="text-sm text-input group-hover:text-primary">
                   {placeholder}
                 </span>
                 <ChevronDown
                   size={responsiveSettings.compactMode ? 16 : 20}
                   className={cn(
-                    "cursor-pointer text-input-placeholder mx-2 transition-all duration-300 group-hover:text-primary",
+                    "cursor-pointer text-input-placeholder mx-2 transition-transform duration-300 group-hover:text-primary",
                     isPopoverOpen && "-rotate-180 text-primary"
                   )}
                 />
@@ -957,7 +957,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
                 onKeyDown={handleInputKeyDown}
                 value={searchValue}
                 onValueChange={setSearchValue}
-                className="placeholder:text-input-placeholder text-primary"
+                className="placeholder:text-input text-primary"
               />
             )}
             <CommandList

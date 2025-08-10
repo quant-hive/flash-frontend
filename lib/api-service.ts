@@ -96,8 +96,8 @@ export class ApiService {
   }
 
   // Database methods
-  static async getAvailableTickers(): Promise<string[]> {
-    return databaseService.getAvailableTickers();
+  static async getAvailableInstruments(): Promise<string[]> {
+    return databaseService.getAvailableInstruments();
   }
 
   static async getDatabaseInfo(): Promise<DatabaseInfo> {
