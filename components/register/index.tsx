@@ -84,7 +84,7 @@ export function RegisterForm() {
       // Redirect based on user role after a short delay to show success message
       setTimeout(() => {
         if (response.user.role === "admin") {
-          router.push("/admin/dashboard");
+          router.push("/admin");
         } else {
           router.push("/dashboard");
         }

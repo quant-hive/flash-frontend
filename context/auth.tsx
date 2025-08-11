@@ -145,26 +145,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push("/login");
   };
 
-  // Auto-logout warning before token expires (at 13 minutes, 2 minutes before expiry)
-  useEffect(() => {
-    if (!isAuthenticated || typeof window === "undefined") return;
-
-    const EXPIRES_MINUTES = 15; // Cookie expiry time in minutes
-    const warningTime = (EXPIRES_MINUTES - 2) * 60 * 1000; // 13 minutes in ms
-
-    const timeoutId = setTimeout(() => {
-      const shouldContinue = window.confirm(
-        "Your session will expire in 2 minutes. Click OK to continue your session or Cancel to logout now."
-      );
-
-      if (!shouldContinue) {
-        logout();
-      }
-    }, warningTime);
-
-    return () => clearTimeout(timeoutId);
-  }, [isAuthenticated, logout]);
-
   // Value provided to context consumers
   const value = {
     user,

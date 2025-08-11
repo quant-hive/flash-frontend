@@ -16,7 +16,7 @@ export default function LoginPage() {
     // Redirect if already authenticated
     if (isAuthenticated) {
       if (isAdmin) {
-        router.push("/admin/dashboard");
+        router.push("/admin");
       } else {
         router.push("/dashboard");
       }

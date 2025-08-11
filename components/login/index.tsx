@@ -56,7 +56,7 @@ export function LoginForm() {
       const response = await login(data);
       // Redirect based on user role
       if (response.user.role === "admin") {
-        router.push("/admin/dashboard");
+        router.push("/admin");
       } else {
         router.push("/dashboard");
       }
