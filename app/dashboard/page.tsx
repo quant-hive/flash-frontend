@@ -57,7 +57,7 @@ import {
 import { backtestService, databaseService } from "@/lib/backtest-service";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 export default function DashboardPage() {
   const [backtestId, setBacktestId] = useState<string | null>(null);
@@ -230,20 +230,31 @@ const LeftPanel = () => {
       initial_cash: z.coerce.number().min(1000, {
         message: "Initial cash must be at least 1000.",
       }),
-      start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
-        message: "Please select a starting date.",
+      start_date: z.string().regex(/^\d{2}-\d{2}-\d{4}$/, {
+        message: "Please enter date in dd-MM-yyyy format.",
       }),
-      end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
-        message: "Please select an ending date.",
+      end_date: z.string().regex(/^\d{2}-\d{2}-\d{4}$/, {
+        message: "Please enter date in dd-MM-yyyy format.",
       }),
       commission: z.coerce.number().min(0).max(100, {
         message: "Commission must be between 0 and 100.",
       }),
     })
-    .refine((data) => new Date(data.start_date) < new Date(data.end_date), {
-      message: "End date must be after start date.",
-      path: ["end_date"],
-    });
+    .refine(
+      (data) => {
+        try {
+          const startDate = parse(data.start_date, "dd-MM-yyyy", new Date());
+          const endDate = parse(data.end_date, "dd-MM-yyyy", new Date());
+          return startDate < endDate;
+        } catch {
+          return false;
+        }
+      },
+      {
+        message: "End date must be after start date.",
+        path: ["end_date"],
+      }
+    );
 
   type BacktestFormValues = z.infer<typeof backtestSchema>;
 
@@ -257,6 +268,43 @@ const LeftPanel = () => {
   const formRef = useRef<HTMLFormElement | null>(null);
   const leftAnchorRef = useRef<HTMLDivElement | null>(null);
   const rightAnchorRef = useRef<HTMLDivElement | null>(null);
+
+  // Helper functions for date formatting
+  const formatDateForDisplay = (dateString: string): string => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return format(date, "dd-MM-yyyy");
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatDateForSave = (dateString: string): string => {
+    if (!dateString) return "";
+    try {
+      // Parse dd-MM-yyyy format and convert to yyyy-MM-dd
+      const date = parse(dateString, "dd-MM-yyyy", new Date());
+      return format(date, "yyyy-MM-dd");
+    } catch {
+      return dateString;
+    }
+  };
+
+  const parseDateInput = (value: string): string => {
+    if (!value) return "";
+    // Remove any non-digit characters except hyphens
+    const cleaned = value.replace(/[^\d-]/g, "");
+    // Ensure dd-MM-yyyy format
+    const parts = cleaned.split("-");
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      if (day.length <= 2 && month.length <= 2 && year.length <= 4) {
+        return cleaned;
+      }
+    }
+    return cleaned;
+  };
 
   const form = useForm<BacktestFormValues>({
     resolver: zodResolver(backtestSchema),
@@ -272,7 +320,13 @@ const LeftPanel = () => {
   });
 
   const onSubmit = async (data: BacktestFormValues) => {
-    console.log("Form submitted:", data);
+    // Convert dates from dd-MM-yyyy to yyyy-MM-dd for saving
+    const formattedData = {
+      ...data,
+      start_date: formatDateForSave(data.start_date),
+      end_date: formatDateForSave(data.end_date),
+    };
+    console.log("Form submitted:", formattedData);
   };
 
   // Load available instruments and database info
@@ -292,8 +346,8 @@ const LeftPanel = () => {
 
         // Set default dates if available
         if (dbInfo.start_date && dbInfo.end_date) {
-          form.setValue("start_date", dbInfo.start_date);
-          form.setValue("end_date", dbInfo.end_date);
+          form.setValue("start_date", formatDateForDisplay(dbInfo.start_date));
+          form.setValue("end_date", formatDateForDisplay(dbInfo.end_date));
         }
       } catch (err: any) {
         console.error("Error loading form data:", err);
@@ -622,204 +676,237 @@ const LeftPanel = () => {
                 )}
               />
 
-              <div className="flex flex-col gap-1 w-full">
-                <fieldset>
-                  <legend className="bg-clip-text text-transparent bg-text_accent_gradient">
-                    Date
-                  </legend>
-                  <div className="mt-1 flex flex-row gap-4 w-full">
-                    <FormField
-                      control={form.control}
-                      name="start_date"
-                      render={({ field }) => (
-                        <FormItem className="flex-1 space-y-0">
-                          <FormControl>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    id="param-start-date"
-                                    variant={"outline"}
-                                    className={cn(
-                                      "w-full pl-3 border-none bg-input-background text-left text-white hover:[&_svg]:text-white font-normal",
-                                      !field.value && "text-input"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP")
-                                    ) : (
-                                      <span>Start date</span>
-                                    )}
-                                    <CalendarDaysIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <CustomPopoverContent
-                                className="w-auto"
-                                align="start"
+              <div className="flex flex-row gap-4 w-full">
+                <FormField
+                  control={form.control}
+                  name="start_date"
+                  render={({ field }) => (
+                    <FormItem className="flex-1 space-y-0">
+                      <FormLabel
+                        htmlFor="param-start-date"
+                        className="bg-clip-text text-transparent bg-text_accent_gradient pb-2"
+                      >
+                        Start Date
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative flex gap-2">
+                          <Input
+                            {...field}
+                            id="param-start-date"
+                            placeholder="dd-MM-yyyy"
+                            className="bg-input-background hover:bg-primary/10 rounded-lg pl-4 placeholder:text-input border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                            onChange={(e) => {
+                              const value = parseDateInput(e.target.value);
+                              field.onChange(value);
+                            }}
+                          />
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                id="param-start-date-calendar"
+                                variant="ghost"
+                                className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
                               >
-                                <Calendar
-                                  mode="single"
-                                  selected={
-                                    field.value &&
-                                    !isNaN(Date.parse(field.value))
-                                      ? new Date(field.value)
-                                      : undefined
-                                  }
-                                  onSelect={(date) => {
-                                    field.onChange(
-                                      date
-                                        ? format(date, "yyyy-MM-dd")
-                                        : undefined
+                                <CalendarIcon className="size-3.5" />
+                                <span className="sr-only">Select date</span>
+                              </Button>
+                            </PopoverTrigger>
+                            <CustomPopoverContent
+                              className="w-auto"
+                              align="center"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={(() => {
+                                  if (!field.value) return undefined;
+                                  try {
+                                    const date = parse(
+                                      field.value,
+                                      "dd-MM-yyyy",
+                                      new Date()
                                     );
-                                  }}
-                                  captionLayout="dropdown"
-                                  defaultMonth={new Date()}
-                                  /* disabled={(date) =>
-                                    date > new Date() ||
-                                    date < new Date("1900-01-01")
-                                  } */
-                                  classNames={{
-                                    months:
-                                      "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                                    month: "space-y-4",
-                                    caption:
-                                      "flex justify-center pt-1 relative items-center",
-                                    day: cn(
-                                      buttonVariants({ variant: "ghost" }),
-                                      "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
-                                    ),
-                                    head_cell:
-                                      "text-primary rounded-md w-9 font-normal text-[0.8rem]",
-                                    day_range_end: "day-range-end",
-                                    day_selected:
-                                      "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                                    day_today:
-                                      "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                                    day_outside:
-                                      "day-outside text-popover-foreground aria-selected:bg-primary aria-selected:text-popover-foreground",
-                                    day_disabled:
-                                      "text-popover-foreground focus:bg-primary focus:text-primary-foreground",
-                                    day_range_middle:
-                                      "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                                    day_hidden: "invisible",
-                                  }}
-                                />
-                              </CustomPopoverContent>
-                            </Popover>
-                          </FormControl>
-                          <FormDescription className="sr-only">
-                            This is the start date for your backtest.
-                          </FormDescription>
-                          <FormMessage className="text-xs pt-1" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="end_date"
-                      render={({ field }) => (
-                        <FormItem className="flex-1 space-y-0">
-                          <FormControl>
-                            {/* <Input
-                              {...field}
-                              id="param-end-date"
-                              placeholder="End Date"
-                              onFocus={(e) => {
-                                e.target.type = "date";
-                              }}
-                              onBlur={(e) => {
-                                if (e.target.value === "") {
-                                  e.target.type = "text";
-                                }
-                              }}
-                              className="bg-input-background rounded-lg pl-4 border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                            /> */}
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    id="param-end-date"
-                                    variant={"outline"}
-                                    className={cn(
-                                      "w-full pl-3 border-none bg-input-background text-left text-white hover:[&_svg]:text-white font-normal",
-                                      !field.value && "text-input"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP")
-                                    ) : (
-                                      <span>End date</span>
-                                    )}
-                                    <CalendarDaysIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <CustomPopoverContent
-                                className="w-auto"
-                                align="start"
-                              >
-                                <Calendar
-                                  mode="single"
-                                  selected={(() => {
-                                    if (!field.value) return undefined;
-                                    const date = new Date(field.value);
                                     return isNaN(date.getTime())
                                       ? undefined
                                       : date;
-                                  })()}
-                                  onSelect={(date) => {
-                                    field.onChange(
-                                      date
-                                        ? format(date, "yyyy-MM-dd")
-                                        : undefined
+                                  } catch {
+                                    return undefined;
+                                  }
+                                })()}
+                                onSelect={(date) => {
+                                  field.onChange(
+                                    date ? format(date, "dd-MM-yyyy") : ""
+                                  );
+                                }}
+                                captionLayout="dropdown"
+                                defaultMonth={(() => {
+                                  if (field.value) {
+                                    try {
+                                      const date = parse(
+                                        field.value,
+                                        "dd-MM-yyyy",
+                                        new Date()
+                                      );
+                                      return isNaN(date.getTime())
+                                        ? new Date()
+                                        : date;
+                                    } catch {
+                                      return new Date();
+                                    }
+                                  }
+                                  return new Date();
+                                })()}
+                                classNames={{
+                                  months:
+                                    "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                                  month: "space-y-4",
+                                  caption:
+                                    "flex justify-center pt-1 relative items-center",
+                                  day: cn(
+                                    buttonVariants({ variant: "ghost" }),
+                                    "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+                                  ),
+                                  head_cell:
+                                    "text-primary rounded-md w-9 font-normal text-[0.8rem]",
+                                  day_range_end: "day-range-end",
+                                  day_selected:
+                                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                                  day_today:
+                                    "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                                  day_outside:
+                                    "day-outside text-popover-foreground aria-selected:bg-primary aria-selected:text-popover-foreground",
+                                  day_disabled:
+                                    "text-popover-foreground focus:bg-primary focus:text-primary-foreground",
+                                  day_range_middle:
+                                    "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                                  day_hidden: "invisible",
+                                }}
+                              />
+                            </CustomPopoverContent>
+                          </Popover>
+                        </div>
+                      </FormControl>
+                      <FormDescription className="sr-only">
+                        This is the start date for your backtest.
+                      </FormDescription>
+                      <FormMessage className="text-xs pt-1" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="end_date"
+                  render={({ field }) => (
+                    <FormItem className="flex-1 space-y-0">
+                      <FormLabel
+                        htmlFor="param-end-date"
+                        className="bg-clip-text text-transparent bg-text_accent_gradient pb-2"
+                      >
+                        End Date
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative flex gap-2">
+                          <Input
+                            {...field}
+                            id="param-end-date"
+                            placeholder="dd-MM-yyyy"
+                            className="bg-input-background hover:bg-primary/10 rounded-lg pl-4 placeholder:text-input border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                            onChange={(e) => {
+                              const value = parseDateInput(e.target.value);
+                              field.onChange(value);
+                            }}
+                          />
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                id="param-end-date-calendar"
+                                variant="ghost"
+                                className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+                              >
+                                <CalendarIcon className="size-3.5" />
+                                <span className="sr-only">Select date</span>
+                              </Button>
+                            </PopoverTrigger>
+                            <CustomPopoverContent
+                              className="w-auto"
+                              align="center"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={(() => {
+                                  if (!field.value) return undefined;
+                                  try {
+                                    const date = parse(
+                                      field.value,
+                                      "dd-MM-yyyy",
+                                      new Date()
                                     );
-                                  }}
-                                  captionLayout="buttons"
-                                  defaultMonth={new Date()}
-                                  /* disabled={(date) =>
-                                    date > new Date() ||
-                                    date < new Date("1900-01-01")
-                                  } */
-                                  classNames={{
-                                    months:
-                                      "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                                    month: "space-y-4",
-                                    caption:
-                                      "flex justify-center pt-1 relative items-center",
-                                    caption_label: "text-sm font-medium",
-                                    day: cn(
-                                      buttonVariants({ variant: "ghost" }),
-                                      "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
-                                    ),
-                                    head_cell:
-                                      "text-primary rounded-md w-9 font-normal text-[0.8rem]",
-                                    day_range_end: "day-range-end",
-                                    day_selected:
-                                      "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                                    day_today:
-                                      "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                                    day_outside:
-                                      "day-outside text-popover-foreground aria-selected:bg-primary aria-selected:text-popover-foreground",
-                                    day_disabled:
-                                      "text-popover-foreground focus:bg-primary focus:text-primary-foreground",
-                                    day_range_middle:
-                                      "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                                    day_hidden: "invisible",
-                                  }}
-                                />
-                              </CustomPopoverContent>
-                            </Popover>
-                          </FormControl>
-                          <FormDescription className="sr-only">
-                            This is the end date for your backtest.
-                          </FormDescription>
-                          <FormMessage className="text-xs pt-1" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </fieldset>
+                                    return isNaN(date.getTime())
+                                      ? undefined
+                                      : date;
+                                  } catch {
+                                    return undefined;
+                                  }
+                                })()}
+                                onSelect={(date) => {
+                                  field.onChange(
+                                    date ? format(date, "dd-MM-yyyy") : ""
+                                  );
+                                }}
+                                captionLayout="dropdown"
+                                defaultMonth={(() => {
+                                  if (field.value) {
+                                    try {
+                                      const date = parse(
+                                        field.value,
+                                        "dd-MM-yyyy",
+                                        new Date()
+                                      );
+                                      return isNaN(date.getTime())
+                                        ? new Date()
+                                        : date;
+                                    } catch {
+                                      return new Date();
+                                    }
+                                  }
+                                  return new Date();
+                                })()}
+                                classNames={{
+                                  months:
+                                    "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                                  month: "space-y-4",
+                                  caption:
+                                    "flex justify-center pt-1 relative items-center",
+                                  day: cn(
+                                    buttonVariants({ variant: "ghost" }),
+                                    "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+                                  ),
+                                  head_cell:
+                                    "text-primary rounded-md w-9 font-normal text-[0.8rem]",
+                                  day_range_end: "day-range-end",
+                                  day_selected:
+                                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                                  day_today:
+                                    "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                                  day_outside:
+                                    "day-outside text-popover-foreground aria-selected:bg-primary aria-selected:text-popover-foreground",
+                                  day_disabled:
+                                    "text-popover-foreground focus:bg-primary focus:text-primary-foreground",
+                                  day_range_middle:
+                                    "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                                  day_hidden: "invisible",
+                                }}
+                              />
+                            </CustomPopoverContent>
+                          </Popover>
+                        </div>
+                      </FormControl>
+                      <FormDescription className="sr-only">
+                        This is the end date for your backtest.
+                      </FormDescription>
+                      <FormMessage className="text-xs pt-1" />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <button
