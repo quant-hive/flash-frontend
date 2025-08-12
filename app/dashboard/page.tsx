@@ -58,13 +58,10 @@ import { backtestService, databaseService } from "@/lib/backtest-service";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { format, parse } from "date-fns";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export default function DashboardPage() {
-  const [backtestId, setBacktestId] = useState<string | null>(null);
-  const [backtestResults, setBacktestResults] =
-    useState<BacktestResults | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [resizableHandlePointerUp, setResizableHandlePointerUp] =
@@ -99,56 +96,6 @@ export default function DashboardPage() {
       router.push("/login");
     }
   }, [isAuthenticated, router]);
-
-  const handleBacktestSubmitted = async (id: string) => {
-    setBacktestId(id);
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Poll for backtest completion
-      const pollInterval = setInterval(async () => {
-        try {
-          const status = await backtestService.getBacktestStatus(id);
-
-          if (status.status === "completed") {
-            clearInterval(pollInterval);
-            const results = await backtestService.getBacktestResults(id);
-            setBacktestResults(results);
-            setIsLoading(false);
-          } else if (status.status === "failed") {
-            clearInterval(pollInterval);
-            setError(`Backtest failed: ${status.message}`);
-            setIsLoading(false);
-          }
-        } catch (err: any) {
-          clearInterval(pollInterval);
-
-          setError(
-            err.response?.data?.detail ||
-              err.message ||
-              "Failed to get backtest status"
-          );
-          setIsLoading(false);
-        }
-      }, 3000); // Poll every 3 seconds
-
-      // Cleanup interval on component unmount
-      return () => clearInterval(pollInterval);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.detail ||
-          err.message ||
-          "Failed to process backtest"
-      );
-      setIsLoading(false);
-    }
-  };
-
-  const handleCloseResults = () => {
-    setBacktestResults(null);
-    setBacktestId(null);
-  };
 
   return (
     <PanelGroup
@@ -224,7 +171,7 @@ const LeftPanel = () => {
       name: z.string().min(1, {
         message: "Name must be at least 1 character.",
       }),
-      instruments: z.array(z.string()).min(1, {
+      tickers: z.array(z.string()).min(1, {
         message: "Please select at least one instrument.",
       }),
       initial_cash: z.coerce.number().min(1000, {
@@ -258,13 +205,24 @@ const LeftPanel = () => {
 
   type BacktestFormValues = z.infer<typeof backtestSchema>;
 
+  interface Chat {
+    type: "prompt" | "response";
+    content?: string;
+    backtest?: BacktestResults;
+  }
+
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const [chat, setChat] = useState<Chat[]>([]);
+  const [backtestId, setBacktestId] = useState<string | null>(null);
+  const [backtestResults, setBacktestResults] =
+    useState<BacktestResults | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dbInfo, setDbInfo] = useState<any>(null);
   const [availableInstruments, setAvailableInstruments] = useState<string[]>(
     []
   );
-  const [selectedInstruments, setSelectedInstruments] = useState<string[]>([]);
   const formRef = useRef<HTMLFormElement | null>(null);
   const leftAnchorRef = useRef<HTMLDivElement | null>(null);
   const rightAnchorRef = useRef<HTMLDivElement | null>(null);
@@ -311,22 +269,111 @@ const LeftPanel = () => {
     defaultValues: {
       name: "",
       prompt: "",
-      instruments: [],
-      initial_cash: 100000,
+      tickers: [],
+      initial_cash: 10000,
       start_date: "",
       end_date: "",
       commission: 0.1,
     },
   });
 
+  const handleBacktestSubmitted = async (id: string) => {
+    let hasAppendedResult = false;
+    let pollInterval = 3000;
+
+    const pollBacktest = setInterval(async () => {
+      try {
+        const status = await backtestService.getBacktestStatus(id);
+
+        if (status.status === "completed") {
+          clearInterval(pollBacktest);
+
+          if (!hasAppendedResult) {
+            hasAppendedResult = true;
+            const results = await backtestService.getBacktestResults(id);
+            setBacktestResults(results);
+            setChat((prevChat) => [
+              ...prevChat,
+              { type: "response", backtest: results },
+            ]);
+            setIsLoading(false);
+          }
+        } else if (status.status === "failed") {
+          clearInterval(pollBacktest);
+
+          if (!hasAppendedResult) {
+            hasAppendedResult = true;
+            const errorMessage = `Backtest failed: ${status.message}`;
+            setError(errorMessage);
+            setChat((prevChat) => [
+              ...prevChat,
+              { type: "response", content: `❌ Error: ${errorMessage}` },
+            ]);
+            setIsLoading(false);
+          }
+        }
+      } catch (err: any) {
+        console.log("Polling error (continuing):", err.message);
+      }
+    }, pollInterval);
+
+    // cleanup
+    return () => clearInterval(pollBacktest);
+  };
+
   const onSubmit = async (data: BacktestFormValues) => {
-    // Convert dates from dd-MM-yyyy to yyyy-MM-dd for saving
-    const formattedData = {
-      ...data,
-      start_date: formatDateForSave(data.start_date),
-      end_date: formatDateForSave(data.end_date),
-    };
-    console.log("Form submitted:", formattedData);
+    setChat([...chat, { type: "prompt", content: data.prompt }]);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Convert dates from dd-MM-yyyy to yyyy-MM-dd for saving
+      const formattedData = {
+        ...data,
+        start_date: formatDateForSave(data.start_date),
+        end_date: formatDateForSave(data.end_date),
+      };
+      console.log("Form submitted:", formattedData);
+
+      // Validate date range
+      const startDate = new Date(data.start_date);
+      const endDate = new Date(data.end_date);
+      const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 60) {
+        const errorMessage =
+          "Backtest period should be at least 60 days for meaningful results";
+        setError(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate initial cash
+      if (data.initial_cash < 10000) {
+        const errorMessage =
+          "Initial cash should be at least Rs. 10,000 for meaningful results";
+        setError(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await backtestService.runBacktest(formattedData);
+      setBacktestId(response.backtest_id);
+
+      // Clear the prompt field after submission
+      form.setValue("prompt", "");
+
+      handleBacktestSubmitted(response.backtest_id);
+    } catch (err: AxiosError | any) {
+      console.error("Backtest submission error:", err);
+      const errorMessage =
+        err.response?.data?.detail ||
+        err.message ||
+        "Failed to submit backtest. Please try again.";
+      setError(errorMessage);
+      setIsLoading(false);
+    }
   };
 
   // Load available instruments and database info
@@ -351,14 +398,19 @@ const LeftPanel = () => {
         }
       } catch (err: any) {
         console.error("Error loading form data:", err);
-        setError(
-          err.message || "Failed to load tickers and database information"
-        );
       }
     };
 
     loadData();
   }, [form]);
+
+  // Auto-scroll to bottom when chat updates
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [chat, isLoading]);
 
   return (
     <div className="flex flex-col h-full">
@@ -415,41 +467,337 @@ const LeftPanel = () => {
                     sideOffset={12}
                     className="text-foreground"
                   >
-                    <div className="flex flex-col">Playground settings</div>
+                    <div className="flex flex-col gap-2">
+                      <div>Playground settings</div>
+                      <button
+                        onClick={() => {
+                          // Demo data for testing the chat system
+                          const demoBacktest: BacktestResults = {
+                            backtest_id: "f60d6e68-2ca5-44db-b03c-ab87094ec6e5",
+                            name: "SMA Crossover Strategy",
+                            metrics: {
+                              total_return: 0.15,
+                              annual_return: 0.08,
+                              volatility: 0.25,
+                              sharpe: 1.2,
+                              sortino: 1.5,
+                              max_drawdown: -0.12,
+                              win_rate: 0.65,
+                              trades: 45,
+                              initial_value: 100000.0,
+                              final_value: 115000.0,
+                              alpha: 0.05,
+                              beta: 0.95,
+                            },
+                            insights:
+                              "The backtest code attempts to perform a simple moving average (SMA) crossover strategy on three Indian stocks (ADANIGREEN, ADANIPORTS, ADANIPOWER) using data from a SQLite database. However, the provided results indicate a critical failure: the backtest did not produce any meaningful data due to insufficient data to initialize the SMA indicator and execute the strategy. The error stems from insufficient data to initialize the SMA indicator and execute the strategy properly.",
+                            improvements:
+                              "The backtest's failure can be improved with better risk management, more robust data validation, and using a longer backtest period. Consider implementing stop-loss orders, position sizing based on volatility, and ensuring sufficient historical data is available before running the strategy.",
+                            strategy_code: `class InstantMoneyStrategy(bt.Strategy):
+    params = (
+        ('maperiod', 15),
+    )
+
+    def __init__(self):
+        self.sma = bt.indicators.SimpleMovingAverage(self.datas[0], period=self.params.maperiod)
+
+    def next(self):
+        if not self.position:
+            if self.sma[0] > self.sma[-1]:
+                self.buy()
+        else:
+            if self.sma[0] < self.sma[-1]:
+                self.close()`,
+                            start_date: "",
+                            end_date: "",
+                          };
+                          setChat([
+                            {
+                              type: "prompt",
+                              content:
+                                "Create a simple moving average crossover strategy for ADANI stocks with 15-day period",
+                            },
+                            { type: "response", backtest: demoBacktest },
+                          ]);
+                        }}
+                        className="text-xs px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      >
+                        Demo Chat
+                      </button>
+                      <button
+                        onClick={() => setChat([])}
+                        className="text-xs px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                      >
+                        Clear Chat
+                      </button>
+                    </div>
                   </CustomPopoverContent>
                 </Popover>
               </div>
             </div>
 
-            <div className="px-4 py-4 relative flex flex-col gap-2 items-center justify-center mt-4 bg-card border-2 border-card-border rounded-2xl h-full">
-              <div className="relative flex items-center justify-center h-full w-full overflow-hidden select-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                  <div className="relative w-full h-full px-8 py-6 flex flex-col items-center justify-center">
-                    <h2 className="text-2xl text-center bg-clip-text text-transparent bg-new_chat_text_accent_gradient bg-white">
-                      Run A New Backtest
-                    </h2>
-                    <p className="text-sm text-nowrap font-semibold tracking-wider text-[#616161]">
-                      Describe your strategy in plain language
-                    </p>
+            <div className="px-4 py-4 relative flex flex-col gap-2 items-center justify-center mt-4 bg-card border-2 border-card-border rounded-2xl h-[600px]">
+              {/* Chat Messages Container */}
+              <div className="flex-1 w-full overflow-hidden relative">
+                {chat.length === 0 ? (
+                  // Empty state when no chats
+                  <div className="relative flex items-center justify-center h-full w-full overflow-hidden select-none">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                      <div className="relative w-full h-full px-8 py-6 flex flex-col items-center justify-center">
+                        <h2 className="text-2xl text-center bg-clip-text text-transparent bg-new_chat_text_accent_gradient bg-white">
+                          Run A New Backtest
+                        </h2>
+                        <p className="text-sm text-nowrap font-semibold tracking-wider text-[#616161]">
+                          Describe your strategy in plain language
+                        </p>
 
-                    <Plus className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2" />
-                    <Plus className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2" />
-                    <Plus className="absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2" />
-                    <Plus className="absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2" />
+                        <Plus className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2" />
+                        <Plus className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2" />
+                        <Plus className="absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2" />
+                        <Plus className="absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2" />
+                      </div>
+                    </div>
+
+                    <div className="absolute inset-0 h-full w-full bg-[radial-gradient(#282828_2px,transparent_2px)] [background-size:24px_24px]" />
                   </div>
-                </div>
+                ) : (
+                  // Chat messages with scrollbar
+                  <div
+                    ref={chatContainerRef}
+                    className="h-full overflow-y-auto pr-2 custom-scrollbar"
+                  >
+                    <div className="flex flex-col gap-4 p-4">
+                      {chat.map((message, index) => (
+                        <div key={index} className="flex flex-col gap-3">
+                          {message.type === "prompt" && (
+                            <div className="flex justify-end">
+                              <div className="max-w-[80%] bg-blue-600 text-white rounded-2xl rounded-br-sm px-4 py-3">
+                                <p className="text-sm whitespace-pre-wrap">
+                                  {message.content}
+                                </p>
+                              </div>
+                            </div>
+                          )}
 
-                <div className="absolute inset-0 h-full w-full bg-[radial-gradient(#282828_2px,transparent_2px)] [background-size:24px_24px]" />
+                          {message.type === "response" &&
+                            message.content &&
+                            !message.backtest && (
+                              <div className="flex justify-start">
+                                <div className="max-w-[80%] bg-red-900/20 border border-red-800 text-red-300 rounded-2xl rounded-bl-sm px-4 py-3">
+                                  <p className="text-sm whitespace-pre-wrap">
+                                    {message.content}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                          {message.type === "response" && message.backtest && (
+                            <div className="flex justify-start">
+                              <div className="max-w-[90%] bg-[#232323] border border-[#333] rounded-2xl rounded-bl-sm p-4">
+                                <div className="flex flex-col gap-4">
+                                  {/* Backtest Header */}
+                                  <div className="flex items-center justify-between border-b border-[#333] pb-3">
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-white">
+                                        {message.backtest.name}
+                                      </h3>
+                                      <p className="text-xs text-[#888] font-mono">
+                                        {message.backtest.backtest_id}
+                                      </p>
+                                    </div>
+                                    <div
+                                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                        message.backtest.metrics.total_return >
+                                        0
+                                          ? "bg-green-900/30 text-green-400 border border-green-800"
+                                          : "bg-red-900/30 text-red-400 border border-red-800"
+                                      }`}
+                                    >
+                                      {message.backtest.metrics.total_return > 0
+                                        ? "Profitable"
+                                        : "Loss"}
+                                    </div>
+                                  </div>
+
+                                  {/* Key Metrics Grid */}
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div className="bg-[#1a1a1a] rounded-lg p-3">
+                                      <p className="text-xs text-[#888] mb-1">
+                                        Total Return
+                                      </p>
+                                      <p
+                                        className={`text-lg font-bold ${
+                                          message.backtest.metrics
+                                            .total_return > 0
+                                            ? "text-green-400"
+                                            : "text-red-400"
+                                        }`}
+                                      >
+                                        {(
+                                          message.backtest.metrics
+                                            .total_return * 100
+                                        ).toFixed(2)}
+                                        %
+                                      </p>
+                                    </div>
+                                    <div className="bg-[#1a1a1a] rounded-lg p-3">
+                                      <p className="text-xs text-[#888] mb-1">
+                                        Sharpe Ratio
+                                      </p>
+                                      <p className="text-lg font-bold text-white">
+                                        {message.backtest.metrics.sharpe.toFixed(
+                                          2
+                                        )}
+                                      </p>
+                                    </div>
+                                    <div className="bg-[#1a1a1a] rounded-lg p-3">
+                                      <p className="text-xs text-[#888] mb-1">
+                                        Max Drawdown
+                                      </p>
+                                      <p className="text-lg font-bold text-red-400">
+                                        {(
+                                          message.backtest.metrics
+                                            .max_drawdown * 100
+                                        ).toFixed(2)}
+                                        %
+                                      </p>
+                                    </div>
+                                    <div className="bg-[#1a1a1a] rounded-lg p-3">
+                                      <p className="text-xs text-[#888] mb-1">
+                                        Win Rate
+                                      </p>
+                                      <p className="text-lg font-bold text-blue-400">
+                                        {(
+                                          message.backtest.metrics.win_rate *
+                                          100
+                                        ).toFixed(1)}
+                                        %
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  {/* Portfolio Value */}
+                                  <div className="bg-[#1a1a1a] rounded-lg p-3">
+                                    <div className="flex justify-between items-center mb-2">
+                                      <p className="text-xs text-[#888]">
+                                        Portfolio Value
+                                      </p>
+                                      <p className="text-xs text-[#888]">
+                                        {message.backtest.metrics.trades} trades
+                                      </p>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <div>
+                                        <p className="text-xs text-[#888]">
+                                          Initial
+                                        </p>
+                                        <p className="text-sm font-semibold text-white">
+                                          ₹
+                                          {message.backtest.metrics.initial_value.toLocaleString()}
+                                        </p>
+                                      </div>
+                                      <div className="text-right">
+                                        <p className="text-xs text-[#888]">
+                                          Final
+                                        </p>
+                                        <p
+                                          className={`text-sm font-semibold ${
+                                            message.backtest.metrics
+                                              .final_value >
+                                            message.backtest.metrics
+                                              .initial_value
+                                              ? "text-green-400"
+                                              : "text-red-400"
+                                          }`}
+                                        >
+                                          ₹
+                                          {message.backtest.metrics.final_value.toLocaleString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Strategy Code Preview */}
+                                  {message.backtest.strategy_code && (
+                                    <div className="bg-[#1a1a1a] rounded-lg p-3">
+                                      <p className="text-xs text-[#888] mb-2">
+                                        Strategy Code
+                                      </p>
+                                      <pre className="text-xs text-[#ccc] font-mono overflow-x-auto whitespace-pre-wrap max-h-48 overflow-y-auto custom-scrollbar">
+                                        {message.backtest.strategy_code}
+                                      </pre>
+                                    </div>
+                                  )}
+
+                                  {/* Insights Section */}
+                                  {message.backtest.insights && (
+                                    <div className="bg-[#1a1a1a] rounded-lg p-3">
+                                      <p className="text-xs text-[#888] mb-2">
+                                        Insights
+                                      </p>
+                                      <div className="text-xs text-[#ccc] max-h-32 overflow-y-auto custom-scrollbar">
+                                        <p className="whitespace-pre-wrap leading-relaxed">
+                                          {message.backtest.insights}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Improvements Section */}
+                                  {message.backtest.improvements && (
+                                    <div className="bg-[#1a1a1a] rounded-lg p-3">
+                                      <p className="text-xs text-[#888] mb-2">
+                                        Suggested Improvements
+                                      </p>
+                                      <div className="text-xs text-[#ccc] max-h-32 overflow-y-auto custom-scrollbar">
+                                        <p className="whitespace-pre-wrap leading-relaxed">
+                                          {message.backtest.improvements}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Action Buttons */}
+                                  {/* <div className="flex gap-2 pt-2">
+                                    <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 px-3 rounded-lg font-medium transition-colors">
+                                      View Details
+                                    </button>
+                                    <button className="flex-1 bg-[#333] hover:bg-[#444] text-white text-xs py-2 px-3 rounded-lg font-medium transition-colors">
+                                      Export Results
+                                    </button>
+                                  </div> */}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+
+                      {/* Loading indicator */}
+                      {isLoading && (
+                        <div className="flex justify-start">
+                          <div className="bg-[#232323] border border-[#333] rounded-2xl rounded-bl-sm p-4">
+                            <div className="flex items-center gap-2">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                              <p className="text-sm text-[#888]">
+                                Running backtest...
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className="h-28 w-full" />
-
-              <div className="absolute bottom-0 w-full">
+              {/* Input Area - Always at bottom */}
+              <div className="relative w-full mt-4">
                 <div
                   onClick={() => {
                     textAreaRef.current?.focus();
                   }}
-                  className="relative bg-[#232323] rounded-md flex flex-col gap-4 px-4 py-2 m-4"
+                  className="relative bg-[#232323] rounded-md flex flex-col gap-4 px-4 py-2"
                 >
                   <FormField
                     control={form.control}
@@ -461,11 +809,22 @@ const LeftPanel = () => {
                             id="playground-chat"
                             className="w-full bg-transparent border-none outline-none resize-none placeholder:text-input placeholder:select-none text-primary"
                             maxRows={8}
-                            placeholder="kisi tarah paisa dede bhai, pleej !!"
+                            placeholder="Describe your trading strategy in plain language..."
                             {...field}
                             ref={textAreaRef}
                             onChange={(e) => {
                               field.onChange(e.target.value);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && !e.shiftKey) {
+                                e.preventDefault();
+                                if (
+                                  form.getValues().prompt.length > 0 &&
+                                  !isLoading
+                                ) {
+                                  form.handleSubmit(onSubmit)();
+                                }
+                              }
                             }}
                           />
                         </FormControl>
@@ -502,11 +861,11 @@ const LeftPanel = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
-                      disabled={form.getValues().prompt.length < 1}
+                      disabled={form.getValues().prompt.length < 1 || isLoading}
                       type="submit"
                       className="h-full bg-blue_accent_gradient_90deg text-black px-5 py-1 font-semibold tracking-wider rounded-md select-none"
                     >
-                      Send
+                      {isLoading ? "Running..." : "Send"}
                     </Button>
                   </div>
                 </div>
@@ -579,7 +938,7 @@ const LeftPanel = () => {
 
               <FormField
                 control={form.control}
-                name="instruments"
+                name="tickers"
                 render={({ field }) => (
                   <FormItem className="flex flex-col w-full space-y-0">
                     <FormLabel
@@ -693,7 +1052,7 @@ const LeftPanel = () => {
                           <Input
                             {...field}
                             id="param-start-date"
-                            placeholder="dd-MM-yyyy"
+                            placeholder="dd-mm-yyyy"
                             className="bg-input-background hover:bg-primary/10 rounded-lg pl-4 placeholder:text-input border-none focus-visible:ring-0 focus-visible:ring-offset-0"
                             onChange={(e) => {
                               const value = parseDateInput(e.target.value);
@@ -755,6 +1114,7 @@ const LeftPanel = () => {
                                   }
                                   return new Date();
                                 })()}
+                                className="p-0"
                                 classNames={{
                                   months:
                                     "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
@@ -808,7 +1168,7 @@ const LeftPanel = () => {
                           <Input
                             {...field}
                             id="param-end-date"
-                            placeholder="dd-MM-yyyy"
+                            placeholder="dd-mm-yyyy"
                             className="bg-input-background hover:bg-primary/10 rounded-lg pl-4 placeholder:text-input border-none focus-visible:ring-0 focus-visible:ring-offset-0"
                             onChange={(e) => {
                               const value = parseDateInput(e.target.value);
@@ -870,6 +1230,7 @@ const LeftPanel = () => {
                                   }
                                   return new Date();
                                 })()}
+                                className="p-0"
                                 classNames={{
                                   months:
                                     "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
