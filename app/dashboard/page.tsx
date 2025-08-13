@@ -60,6 +60,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format, parse } from "date-fns";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import ReactMarkdown from "react-markdown";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -735,10 +736,10 @@ const LeftPanel = () => {
                                       <p className="text-xs text-[#888] mb-2">
                                         Insights
                                       </p>
-                                      <div className="text-xs text-[#ccc] max-h-32 overflow-y-auto custom-scrollbar">
-                                        <p className="whitespace-pre-wrap leading-relaxed">
+                                      <div className="text-sm text-[#ccc] overflow-y-auto custom-scrollbar leading-relaxed">
+                                        <ReactMarkdown>
                                           {message.backtest.insights}
-                                        </p>
+                                        </ReactMarkdown>
                                       </div>
                                     </div>
                                   )}
@@ -749,10 +750,10 @@ const LeftPanel = () => {
                                       <p className="text-xs text-[#888] mb-2">
                                         Suggested Improvements
                                       </p>
-                                      <div className="text-xs text-[#ccc] max-h-32 overflow-y-auto custom-scrollbar">
-                                        <p className="whitespace-pre-wrap leading-relaxed">
+                                      <div className="text-sm text-[#ccc] overflow-y-auto custom-scrollbar leading-relaxed">
+                                        <ReactMarkdown>
                                           {message.backtest.improvements}
-                                        </p>
+                                        </ReactMarkdown>
                                       </div>
                                     </div>
                                   )}
@@ -782,6 +783,16 @@ const LeftPanel = () => {
                               <p className="text-sm text-[#888]">
                                 Running backtest...
                               </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {error && (
+                        <div className="flex justify-start">
+                          <div className="bg-[#232323] border border-[#333] rounded-2xl rounded-bl-sm p-4">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm text-[#888]">❌ {error}</p>
                             </div>
                           </div>
                         </div>
@@ -883,7 +894,7 @@ const LeftPanel = () => {
 
           <div
             ref={rightAnchorRef}
-            className="relative flex flex-col flex-1 h-full before:absolute before:-left-2 before:top-[45%] before:translate-y-1/2 before:z-30 before:h-4 before:w-4 before:rounded-full before:border-4 before:border-border before:bg-[#181818]"
+            className="relative flex flex-col flex-1 h-fit before:absolute before:-left-2 before:top-[45%] before:translate-y-1/2 before:z-30 before:h-4 before:w-4 before:rounded-full before:border-4 before:border-border before:bg-[#181818]"
           >
             <div className="flex flex-row justify-between items-center">
               <h1 className="text-2xl font-light">Params</h1>
@@ -953,7 +964,6 @@ const LeftPanel = () => {
                         name="instruments"
                         autoSize={false}
                         hideSelectAll
-                        singleLine
                         responsive
                         value={field.value}
                         onValueChange={(values) => {
@@ -1048,6 +1058,27 @@ const LeftPanel = () => {
                         Start Date
                       </FormLabel>
                       <FormControl>
+                        <Input
+                          {...field}
+                          id="param-start-date"
+                          type="date"
+                          className="bg-input-background hover:bg-primary/10 rounded-lg pl-4 placeholder:text-input border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                          value={
+                            field.value ? formatDateForSave(field.value) : ""
+                          }
+                          onChange={(e) => {
+                            const dateValue = e.target.value;
+                            if (dateValue) {
+                              // Convert yyyy-MM-dd to dd-MM-yyyy for form state
+                              const formattedDate =
+                                formatDateForDisplay(dateValue);
+                              field.onChange(formattedDate);
+                            } else {
+                              field.onChange("");
+                            }
+                          }}
+                        />
+                        {/* 
                         <div className="relative flex gap-2">
                           <Input
                             {...field}
@@ -1070,9 +1101,9 @@ const LeftPanel = () => {
                                 <span className="sr-only">Select date</span>
                               </Button>
                             </PopoverTrigger>
-                            <CustomPopoverContent
-                              className="w-auto"
-                              align="center"
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
                             >
                               <Calendar
                                 mode="single"
@@ -1114,7 +1145,6 @@ const LeftPanel = () => {
                                   }
                                   return new Date();
                                 })()}
-                                className="p-0"
                                 classNames={{
                                   months:
                                     "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
@@ -1141,9 +1171,10 @@ const LeftPanel = () => {
                                   day_hidden: "invisible",
                                 }}
                               />
-                            </CustomPopoverContent>
+                            </PopoverContent>
                           </Popover>
                         </div>
+                        */}
                       </FormControl>
                       <FormDescription className="sr-only">
                         This is the start date for your backtest.
@@ -1164,6 +1195,27 @@ const LeftPanel = () => {
                         End Date
                       </FormLabel>
                       <FormControl>
+                        <Input
+                          {...field}
+                          id="param-end-date"
+                          type="date"
+                          className="bg-input-background hover:bg-primary/10 rounded-lg pl-4 placeholder:text-input border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                          value={
+                            field.value ? formatDateForSave(field.value) : ""
+                          }
+                          onChange={(e) => {
+                            const dateValue = e.target.value;
+                            if (dateValue) {
+                              // Convert yyyy-MM-dd to dd-MM-yyyy for form state
+                              const formattedDate =
+                                formatDateForDisplay(dateValue);
+                              field.onChange(formattedDate);
+                            } else {
+                              field.onChange("");
+                            }
+                          }}
+                        />
+                        {/* 
                         <div className="relative flex gap-2">
                           <Input
                             {...field}
@@ -1260,6 +1312,7 @@ const LeftPanel = () => {
                             </CustomPopoverContent>
                           </Popover>
                         </div>
+                        */}
                       </FormControl>
                       <FormDescription className="sr-only">
                         This is the end date for your backtest.
