@@ -48,6 +48,8 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
     content: "",
     visible: false,
   });
+  const [isTooltipExiting, setIsTooltipExiting] = useState<boolean>(false);
+  const exitTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [isVisible, setIsVisible] = useState<boolean>(false); // Start as false during page load
   const [isPageReady, setIsPageReady] = useState<boolean>(false);
   const [isMouseInWindow, setIsMouseInWindow] = useState<boolean>(false); // Track if mouse is in window
@@ -56,6 +58,99 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
   const isTouchDevice = useTouchDevice(); // Use the custom hook
   const tooltipRef = React.useRef<HTMLDivElement>(null);
   const lastPosition = React.useRef<CursorPosition>({ x: 0, y: 0 });
+  const currentUrl = React.useRef<string>(
+    typeof window !== "undefined" ? window.location.href : ""
+  );
+
+  // Effect to monitor URL changes and hide tooltip
+  useEffect(() => {
+    const checkUrlChange = () => {
+      const newUrl = window.location.href;
+      if (currentUrl.current !== newUrl) {
+        currentUrl.current = newUrl;
+        // Hide tooltip immediately on URL change with animation
+        if (tooltip.visible) {
+          if (exitTimeoutRef.current) {
+            clearTimeout(exitTimeoutRef.current);
+          }
+          setIsTooltipExiting(true);
+          exitTimeoutRef.current = setTimeout(() => {
+            setTooltip({ content: "", visible: false });
+            setIsTooltipExiting(false);
+            exitTimeoutRef.current = null;
+          }, 300); // Match the animation duration
+        }
+      }
+    };
+
+    // Monitor URL changes through various methods
+    const handlePopState = () => {
+      checkUrlChange();
+    };
+
+    const handleHashChange = () => {
+      checkUrlChange();
+    };
+
+    // Use MutationObserver to detect any changes that might affect the URL
+    const observer = new MutationObserver(() => {
+      checkUrlChange();
+    });
+
+    // Start observing the document for changes
+    observer.observe(document, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["href"],
+    });
+
+    // Set up interval to periodically check URL (fallback for programmatic navigation)
+    const urlCheckInterval = setInterval(checkUrlChange, 100);
+
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      observer.disconnect();
+      clearInterval(urlCheckInterval);
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [tooltip.visible]); // Add tooltip.visible as dependency
+
+  // Additional effect to immediately hide tooltip on any navigation
+  useEffect(() => {
+    const handleNavigationStart = () => {
+      if (tooltip.visible) {
+        // Immediately hide tooltip without animation for instant response
+        if (exitTimeoutRef.current) {
+          clearTimeout(exitTimeoutRef.current);
+          exitTimeoutRef.current = null;
+        }
+        setTooltip({ content: "", visible: false });
+        setIsTooltipExiting(false);
+      }
+    };
+
+    // Listen for beforeunload to catch immediate navigation
+    window.addEventListener("beforeunload", handleNavigationStart);
+
+    // Listen for any link clicks
+    document.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest(
+        'a, button[type="submit"], input[type="submit"]'
+      );
+      if (link) {
+        handleNavigationStart();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("beforeunload", handleNavigationStart);
+    };
+  }, [tooltip.visible]);
 
   // Calculate tooltip position with boundary checking
   const getTooltipPosition = React.useCallback(() => {
@@ -270,6 +365,12 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }
+
+      // Clear any pending tooltip exit timeout
+      if (exitTimeoutRef.current) {
+        clearTimeout(exitTimeoutRef.current);
+        exitTimeoutRef.current = null;
+      }
     };
   }, [isPageReady, isVisible, isTouchDevice, isMouseInWindow, isDragging]);
 
@@ -319,12 +420,32 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const showTooltip = React.useCallback((content: string) => {
+    // Clear any existing exit timeout to allow immediate showing of new tooltip
+    if (exitTimeoutRef.current) {
+      clearTimeout(exitTimeoutRef.current);
+      exitTimeoutRef.current = null;
+    }
+
+    // Reset exit state and show new tooltip immediately
+    setIsTooltipExiting(false);
     setTooltip({ content, visible: true });
   }, []);
 
   const hideTooltip = React.useCallback(() => {
-    setTooltip({ content: "", visible: false });
-  }, []);
+    if (tooltip.visible && !isTooltipExiting) {
+      // Clear any existing timeout
+      if (exitTimeoutRef.current) {
+        clearTimeout(exitTimeoutRef.current);
+      }
+
+      setIsTooltipExiting(true);
+      exitTimeoutRef.current = setTimeout(() => {
+        setTooltip({ content: "", visible: false });
+        setIsTooltipExiting(false);
+        exitTimeoutRef.current = null;
+      }, 300); // Match the animation duration
+    }
+  }, [tooltip.visible, isTooltipExiting]);
 
   const contextValue = React.useMemo(
     () => ({
@@ -364,10 +485,14 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
         />
       )}
       {/* Tooltip */}
-      {tooltip.visible && isVisible && !isTouchDevice && (
+      {(tooltip.visible || isTooltipExiting) && isVisible && !isTouchDevice && (
         <div
           ref={tooltipRef}
-          className="fixed bg-tooltip_bg_gradient border-2 border-[#268CFF] flex items-center justify-center px-[14px] py-[3px] rounded-full pointer-events-none z-[10000] transition-all ease-out animate-fade-in duration-300 whitespace-nowrap  drop-shadow-[0_4px_12px_rgba(16,80,153,0.7)]"
+          className={`fixed bg-tooltip_bg_gradient border-2 border-[#268CFF] flex items-center justify-center px-[14px] py-[3px] rounded-full pointer-events-none z-[10000] transition-all ease-out duration-300 whitespace-nowrap drop-shadow-[0_4px_12px_rgba(16,80,153,0.7)] ${
+            isTooltipExiting
+              ? "animate-fade-out opacity-0"
+              : "animate-fade-in opacity-100"
+          }`}
           style={getTooltipPosition()}
         >
           <span className="-mt-0.5 text-transparent bg-clip-text bg-tooltip_text_gradient text-[14px] font-semibold">

@@ -81,7 +81,7 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="flex flex-col w-full gap-6 mt-6 h-full">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Backtest History</h1>
         <Button onClick={() => router.push("/dashboard/compare")}>
