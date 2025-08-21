@@ -14,7 +14,7 @@ const axiosInstance = axios.create({
 // Cookie configuration
 const COOKIE_CONFIG = {
   ACCESS_TOKEN: 'access_token',
-  EXPIRES_MINUTES: 15,
+  EXPIRES_MINUTES: 30,
   SECURE: process.env.NODE_ENV === 'production',
   SAME_SITE: 'strict' as const
 };

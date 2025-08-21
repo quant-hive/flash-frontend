@@ -3,11 +3,11 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { backtestService } from "@/lib/backtest-service";
-import { BacktestResults } from "@/types/backtest-service";
-import { BacktestResultsView } from "@/components/dashboard/backtest/results";
 import { LoadingState } from "@/components/dashboard/backtest/loading-state";
 import { ErrorState } from "@/components/dashboard/backtest/error-state";
 import { BacktestPageProps } from "@/types/dashboard-backtest";
+import BacktestResultsView from "@/components/dashboard/backtest/new-results";
+import { BacktestResults } from "@/types/backtest-service";
 
 export default function BacktestPage({ params }: BacktestPageProps) {
   // Since this is a client component, we can use the `use` hook to resolve the params.
@@ -60,7 +60,6 @@ export default function BacktestPage({ params }: BacktestPageProps) {
       {backtestResults && (
         <BacktestResultsView
           backtestId={resolvedParams.id}
-          onClose={handleClose}
           backtestResults={backtestResults}
         />
       )}
