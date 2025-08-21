@@ -1,66 +1,14 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  LegacyRef,
-  HTMLProps,
-} from "react";
-import { BacktestForm } from "@/components/dashboard/backtest/form";
-import { BacktestResultsView } from "@/components/dashboard/backtest/results";
-import { BacktestResults } from "@/types/backtest-service";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  AlertCircle,
-  CalendarDaysIcon,
-  CalendarIcon,
-  ChevronDown,
-  EllipsisVertical,
-  Mic,
-  Mic2,
-  PlusIcon,
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { DotsHorizontalIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
-import CustomPopoverContent from "@/components/custom-popover-content";
-import { cn } from "@/lib/utils";
 import {
   Panel,
   PanelGroup,
   PanelResizeHandle,
   disableGlobalCursorStyles,
 } from "react-resizable-panels";
-import HoverTooltipWrapper from "@/components/tooltip";
-import TextareaAutosize from "react-textarea-autosize";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Form, FormProvider, useForm } from "react-hook-form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { MultiSelect } from "@/components/new-multi-select";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { backtestService, databaseService } from "@/lib/backtest-service";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { format, parse } from "date-fns";
-import { toast } from "sonner";
-import { AxiosError } from "axios";
-import ReactMarkdown from "react-markdown";
 import LeftPanel from "@/components/dashboard/left-panel";
 import RightPanel from "@/components/dashboard/right-panel/page";
 

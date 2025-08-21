@@ -24,12 +24,6 @@ export default function RootLayout({
         className={`${luxe_uno.variable} font-luxe_uno tracking-wide relative min-h-screen bg-[#030303]`}
       >
         <Providers>
-          <>
-            <div className="absolute top-0 left-0 w-7 h-7 md:w-9 md:h-9 bg-[#111111]" />
-            <div className="absolute top-0 right-0 w-7 h-7 md:w-9 md:h-9 bg-[#111111]" />
-            <div className="absolute bottom-0 left-0 w-7 h-7 md:w-9 md:h-9 bg-[#111111]" />
-            <div className="absolute bottom-0 right-0 w-7 h-7 md:w-9 md:h-9 bg-[#111111]" />
-          </>
           <Navbar />
           {children}
         </Providers>

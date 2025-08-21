@@ -15,12 +15,12 @@ export default function DashboardLayout({
 }) {
   return (
     <ProtectedRoute requireAuth={true} requireAdmin={false}>
-      <div className="flex flex-col h-screen p-[38px] w-full">
+      <div className="flex flex-col h-screen pt-8 px-4 pb-4 w-full">
         <ActionBar />
         <div className="flex flex-row h-full bg-background border-1 rounded-xl overflow-auto">
           <Sidebar />
           {/* overflow-auto (for the belowd div); incase content overflows and scrolling is required */}
-          <div className="flex flex-col flex-1 pl-4 pt-7 pr-4 pb-4 overflow-auto custom-scrollbar">
+          <div className="flex flex-col flex-1 pl-4 pt-6 pr-4 pb-4 overflow-auto custom-scrollbar">
             <main className="flex flex-col flex-1">
               <Breadcrumbs />
 

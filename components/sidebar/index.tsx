@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { Fragment, use, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   Home,
@@ -30,9 +30,19 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   // { name: "Analytics", href: "/dashboard/analytics", icon: BarChart2 },
   // { name: "Compare", href: "/dashboard/compare", icon: GitCompare },
-  { name: "Backtests", href: "/dashboard/backtest", icon: FlaskConical },
-  { name: "History", href: "/dashboard/history", icon: History },
-  { name: "Settings", href: "/dashboard/settings", icon: SlidersHorizontal },
+  {
+    name: "Backtests",
+    href: "/backtest",
+    icon: FlaskConical,
+    items: [
+      { name: "Overview", href: "/backtest/overview" },
+      { name: "Trades", href: "/backtest/trades" },
+      { name: "Performance", href: "/backtest/performance" },
+      { name: "Strategy", href: "/backtest/strategy" },
+    ],
+  },
+  { name: "History", href: "/history", icon: History },
+  { name: "Settings", href: "/settings", icon: SlidersHorizontal },
 ];
 
 export function Sidebar() {
@@ -54,7 +64,7 @@ export function Sidebar() {
       </button> */}
       <div
         className={cn(
-          "z-20 flex flex-col bg-background transition-all duration-300 ease-in-out lg:static h-full w-56 pr-0.5 justify-between pt-6 pb-4 pl-5"
+          "z-20 flex flex-col bg-background transition-all duration-300 ease-in-out lg:static h-full w-56 pr-0.5 justify-between pt-4 pb-4 pl-5"
         )}
       >
         <div className="flex flex-col">
@@ -87,37 +97,61 @@ export function Sidebar() {
             </Button> */}
 
           <div className="flex-1 overflow-auto pl-0.5 pr-0.5 py-0.5 mt-3">
-            <nav className="flex flex-col flex-1 gap-1.5">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center rounded-md pl-4 py-1",
-                    pathname === item.href
-                      ? "bg-button-focus shadow-xl"
-                      : "hover:bg-button-focus"
-                  )}
-                >
-                  <item.icon className={cn("h-4 w-4 mr-3")} />
-                  {!isCollapsed && <span>{item.name}</span>}
-                </Link>
-              ))}
+            <div className="relative w-full transition-all duration-300 ease-in-out">
+              <nav className="flex flex-col flex-1 gap-1.5">
+                {navigation.map((item) => (
+                  <div key={item.name} className="flex flex-col">
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "flex items-center rounded-md pl-4 py-1",
+                        pathname === item.href || pathname.startsWith(item.href)
+                          ? "bg-button-focus shadow-xl"
+                          : "hover:bg-button-focus"
+                      )}
+                    >
+                      <item.icon className={cn("h-4 w-4 mr-3")} />
+                      {!isCollapsed && <span>{item.name}</span>}
+                    </Link>
+                    {(pathname === item.href ||
+                      pathname.startsWith(item.href)) &&
+                      item.items && (
+                        <div className="flex flex-col rounded-md mt-1 ml-3 bg-card p-1">
+                          {item.items.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              href={subItem.href}
+                              className={cn(
+                                "flex items-center rounded-md pl-4 py-1",
+                                pathname === subItem.href ||
+                                  pathname.startsWith(subItem.href)
+                                  ? "bg-button-focus shadow-xl"
+                                  : "hover:bg-button-focus"
+                              )}
+                            >
+                              {!isCollapsed && <span>{subItem.name}</span>}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+                ))}
 
-              <hr className="border-muted-foreground rounded-full mt-4" />
+                <hr className="border-muted-foreground rounded-full mt-4" />
 
-              <div className="mt-4 pl-0.5">
-                <Link
-                  href="/support"
-                  className={cn(
-                    "flex items-center rounded-md pl-4 py-1 hover:bg-button-focus"
-                  )}
-                >
-                  <Headset className={cn("h-4 w-4 mr-3")} />
-                  <span>Support</span>
-                </Link>
-              </div>
-            </nav>
+                <div className="mt-4 pl-0.5">
+                  <Link
+                    href="/support"
+                    className={cn(
+                      "flex items-center rounded-md pl-4 py-1 hover:bg-button-focus"
+                    )}
+                  >
+                    <Headset className={cn("h-4 w-4 mr-3")} />
+                    <span>Support</span>
+                  </Link>
+                </div>
+              </nav>
+            </div>
           </div>
         </div>
 
@@ -141,7 +175,7 @@ export function Sidebar() {
               />
             </div>
 
-            <div className="flex flex-col items-center justify-center px-2 pt-1 pb-2">
+            <div className="flex flex-col items-center justify-center px-1.5 pt-1 pb-1">
               <div className="flex flex-col text-center">
                 <span className="text-xs mt-1.5 mb-0.5">
                   You're now using Free Tier
@@ -169,7 +203,7 @@ export function Sidebar() {
 
               <Link
                 href="/plans"
-                className="w-full text-center text-sm bg-[#141414] hover:bg-[#070707] py-2 rounded-lg mt-2"
+                className="w-full text-center text-sm bg-[#141414] hover:bg-[#070707] py-2 rounded-lg mt-1.5"
               >
                 See Plans
               </Link>
