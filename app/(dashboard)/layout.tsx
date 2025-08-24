@@ -21,16 +21,16 @@ export default function DashboardLayout({
           <ActionBar />
           <div className="flex flex-row h-full bg-background border-1 rounded-xl overflow-auto">
             <Sidebar />
-            {/* overflow-auto (for the belowd div); incase content overflows and scrolling is required */}
-            <div className="flex flex-col flex-1 pl-4 pt-6 pr-4 pb-4 overflow-auto custom-scrollbar">
-              <main className="flex flex-col flex-1">
+            {/* Content area: children fills remaining height, footer at bottom */}
+            <main className="flex flex-col flex-1 pl-4 pt-6 pr-4 pb-4">
+              {/* Stretch area for page content */}
+              <div className="flex-1 min-h-0 flex flex-col h-full">
                 <Breadcrumbs />
-
                 {children}
-              </main>
+              </div>
 
               <Footer />
-            </div>
+            </main>
           </div>
         </div>
       </DashboardContextProvider>

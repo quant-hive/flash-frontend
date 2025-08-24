@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/auth";
+import React, { useEffect, useState } from "react";
 import {
   Panel,
   PanelGroup,
   PanelResizeHandle,
   disableGlobalCursorStyles,
 } from "react-resizable-panels";
-import LeftPanel from "@/components/dashboard/left-panel";
-import RightPanel from "@/components/dashboard/right-panel/page";
+import { useAuth } from "@/context/auth";
+import { useRouter } from "next/navigation";
+import ExplainableAI from "@/components/dashboard/explainable-ai/page";
 
-export default function DashboardPage() {
+const ChatLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [resizableHandlePointerUp, setResizableHandlePointerUp] =
@@ -52,10 +51,10 @@ export default function DashboardPage() {
     <PanelGroup
       autoSaveId={"quanthive-dashboard-panel-group"}
       direction="horizontal"
-      className="flex flex-row w-full gap-6 mt-6 h-full"
+      className="flex flex-row w-full mt-6 h-full"
     >
-      <Panel defaultSize={70} minSize={75} className="h-full">
-        <LeftPanel />
+      <Panel defaultSize={70} minSize={75} className="h-full mr-4">
+        {children}
       </Panel>
 
       <div className="flex flex-col items-center justify-center">
@@ -81,34 +80,11 @@ export default function DashboardPage() {
         </PanelResizeHandle>
       </div>
 
-      <Panel collapsible minSize={17} defaultSize={20} className="h-full">
-        <RightPanel />
+      <Panel collapsible minSize={17} defaultSize={20} className="h-full ml-4">
+        <ExplainableAI />
       </Panel>
-
-      {/* <div>
-        <h1 className="text-3xl font-bold mb-1">Flash</h1>
-        <p className="text-muted-foreground">
-          Test your investment ideas in minutes
-        </p>
-      </div>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {!backtestResults ? (
-        <BacktestForm onBacktestSubmitted={handleBacktestSubmitted} />
-      ) : (
-        <BacktestResultsView
-          backtestId={backtestId!}
-          onClose={handleCloseResults}
-          backtestResults={backtestResults}
-        />
-      )} */}
     </PanelGroup>
   );
-}
+};
+
+export default ChatLayout;

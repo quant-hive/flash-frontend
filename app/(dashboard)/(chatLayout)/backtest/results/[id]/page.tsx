@@ -56,13 +56,13 @@ export default function BacktestPage({ params }: BacktestPageProps) {
   }
 
   return (
-    <div>
+    <>
       {backtestResults && (
         <BacktestResultsView
           backtestId={resolvedParams.id}
           backtestResults={backtestResults}
         />
       )}
-    </div>
+    </>
   );
 }

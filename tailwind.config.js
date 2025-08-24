@@ -129,6 +129,18 @@ module.exports = {
           "linear-gradient(135deg, #5293DD 14%, #5293DD20 16%, #6BB0FF 29%, #6BB0FF20 49%, #3F8BE0 62%, #3F8BE020 75%, #8BC2FF 92%)",
         text_accent_gradient:
           "linear-gradient(135deg, #B9DAFF 0%, #75ACEA 100%)",
+        green_icon_legend_gradient:
+          "linear-gradient(135deg, #9CFF93 0%, #6DB368 32%, #97FF93 66%, #5EA15C 100%)",
+        green_text_legend_gradient:
+          "linear-gradient(90deg, #9CFF93 0%, #6DB368 50%, #97FF93 75%, #5EA15C 100%)",
+        blue_icon_legend_gradient:
+          "linear-gradient(135deg, #93E2FF 0%, #689FB3 32%, #93D9FF 66%, #5C95A1 100%)",
+        blue_text_legend_gradient:
+          "linear-gradient(90deg, #93E2FF 0%, #689FB3 50%, #93D9FF 75%, #5C95A1 100%)",
+        red_icon_legend_gradient:
+          "linear-gradient(135deg, #FF9395 0%, #B36869 32%, #FF9395 66%, #A15C5D 100%)",
+        red_text_legend_gradient:
+          "linear-gradient(90deg, #FF9395 0%, #B36869 50%, #FF9395 75%, #A15C5D 100%)",
       },
     },
   },

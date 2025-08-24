@@ -6,7 +6,7 @@ import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { ChevronDown } from "lucide-react";
 import React, { useState } from "react";
 
-const RightPanel = () => {
+const ExplainableAI = () => {
   const [isSchedulePopoverOpen, setIsSchedulePopoverOpen] = useState(false);
 
   return (
@@ -56,11 +56,10 @@ const RightPanel = () => {
             <div className="flex flex-col">Explainable AI settings</div>
           </CustomPopoverContent>
         </Popover>
-        <div></div>
       </div>
 
       <Card className="bg-card border-2 border-card-border w-full mt-4 h-full">
-        <CardContent className="pt-6 px-8 text-center">
+        <CardContent className="pt-4 px-8 text-center">
           <span className=" text-xl bg-clip-text text-transparent bg-text_accent_gradient">
             Explainable AI
             <sup className="bg-clip-text text-transparent bg-text_accent_gradient text-[10px] -top-2">
@@ -69,11 +68,11 @@ const RightPanel = () => {
             </sup>
           </span>
 
-          <hr className="my-4 h-0.5 bg-card-border" />
+          <hr className="my-3 h-0.5 bg-card-border" />
         </CardContent>
       </Card>
     </div>
   );
 };
 
-export default RightPanel;
+export default ExplainableAI;

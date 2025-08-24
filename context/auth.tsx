@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ApiService } from "@/lib/api-service";
 import {
   LoginCredentials,
@@ -34,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAdmin = useSelector(selectIsAdmin);
   const accessToken = useSelector(selectAccessToken);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Initialize authentication state from Redux store or fetch user details
   useEffect(() => {
@@ -124,6 +125,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         accessToken: response.access_token,
       })
     );
+
+    // Redirect to intended page or default after successful login
+    const redirectParam = searchParams?.get("redirectTo");
+    const target =
+      (redirectParam && redirectParam.startsWith("/") && redirectParam) ||
+      (response.user?.role === "admin" ? "/admin" : "/dashboard");
+    router.replace(target);
+
     return response;
   };
 
@@ -136,6 +145,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         accessToken: response.access_token,
       })
     );
+
+    // After register, also honor redirect if present
+    const redirectParam = searchParams?.get("redirectTo");
+    if (redirectParam && redirectParam.startsWith("/")) {
+      router.replace(redirectParam);
+    } else {
+      router.replace(response.user?.role === "admin" ? "/admin" : "/dashboard");
+    }
+
     return response;
   };
 

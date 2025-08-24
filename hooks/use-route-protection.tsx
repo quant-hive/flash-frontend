@@ -43,8 +43,9 @@ export function useRouteProtection(options: UseRouteProtectionOptions = {}) {
             "🚫 Route protection: User not authenticated, redirecting to login"
           );
           // Add current page as redirect parameter to login URL
+          const current = `${pathname}${typeof window !== 'undefined' ? window.location.search : ''}${typeof window !== 'undefined' ? window.location.hash : ''}`;
           const loginUrl = `${redirectTo}?redirectTo=${encodeURIComponent(
-            pathname
+            current
           )}`;
           router.push(loginUrl);
         }
@@ -72,8 +73,9 @@ export function useRouteProtection(options: UseRouteProtectionOptions = {}) {
             );
             logout();
             // Add current page as redirect parameter when token expires
+            const current = `${pathname}${typeof window !== 'undefined' ? window.location.search : ''}${typeof window !== 'undefined' ? window.location.hash : ''}`;
             const loginUrl = `${redirectTo}?redirectTo=${encodeURIComponent(
-              pathname
+              current
             )}`;
             router.push(loginUrl);
             return;
@@ -84,8 +86,9 @@ export function useRouteProtection(options: UseRouteProtectionOptions = {}) {
           );
           logout();
           // Add current page as redirect parameter when token validation fails
+          const current = `${pathname}${typeof window !== 'undefined' ? window.location.search : ''}${typeof window !== 'undefined' ? window.location.hash : ''}`;
           const loginUrl = `${redirectTo}?redirectTo=${encodeURIComponent(
-            pathname
+            current
           )}`;
           router.push(loginUrl);
           return;
@@ -93,17 +96,15 @@ export function useRouteProtection(options: UseRouteProtectionOptions = {}) {
       }
 
       // Handle successful authentication - redirect to intended page or default
-      if (
-        isAuthenticated &&
-        pathname ===
-          redirectTo.replace("?redirectTo=" + encodeURIComponent(pathname), "")
-      ) {
+      const loginPath = redirectTo.split("?")[0];
+      if (isAuthenticated && pathname === loginPath) {
         const targetRedirect =
-          redirectParam || (isAdmin ? "/admin" : "/dashboard");
+          (redirectParam && redirectParam.startsWith("/") && redirectParam) ||
+          (isAdmin ? "/admin" : "/dashboard");
         console.log(
           `✅ Route protection: User authenticated, redirecting to ${targetRedirect}`
         );
-        router.push(targetRedirect);
+        router.replace(targetRedirect);
       }
     };
 

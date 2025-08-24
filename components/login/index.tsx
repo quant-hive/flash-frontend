@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+// Removed router navigation here to avoid overriding AuthProvider redirects
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -33,7 +33,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
  * LoginForm component for the login page.
  */
 export function LoginForm() {
-  const router = useRouter();
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -53,13 +52,8 @@ export function LoginForm() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await login(data);
-      // Redirect based on user role
-      if (response.user.role === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/dashboard");
-      }
+      await login(data);
+      // Do not navigate here; AuthProvider handles redirect (including redirectTo param)
     } catch (err: any) {
       setError(
         err.response?.data?.message ||

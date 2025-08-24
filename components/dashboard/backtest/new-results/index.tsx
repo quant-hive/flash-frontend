@@ -7,14 +7,8 @@ import type {
 } from "@/types/backtest-service";
 import Papa from "papaparse";
 import React, { useEffect, useState } from "react";
-import {
-  disableGlobalCursorStyles,
-  Panel,
-  PanelGroup,
-  PanelResizeHandle,
-} from "react-resizable-panels";
-import RightPanel from "../../right-panel/page";
-import { Card, CardContent } from "@/components/ui/card";
+import ResultMetrics from "../../result-metrics";
+import { ReturnsComparisonChart } from "../new-returns-comparison-chart";
 
 interface BacktestResultsProps {
   backtestId: string;
@@ -430,36 +424,7 @@ const BacktestResultsView = ({
     };
   };
 
-  const [resizableHandlePointerUp, setResizableHandlePointerUp] =
-    useState(false);
-  const [resizableHandlePointerDown, setResizableHandlePointerDown] =
-    useState(false);
-
-  useEffect(() => {
-    // Disable global cursor styles for resizable panels
-    disableGlobalCursorStyles();
-  }, []);
-
-  useEffect(() => {
-    // Global pointer up listener to handle drag end when pointer is released outside the handle
-    const handleGlobalPointerUp = () => {
-      if (resizableHandlePointerDown) {
-        setResizableHandlePointerDown(false);
-        setResizableHandlePointerUp(true);
-      }
-    };
-
-    // Add global listener
-    document.addEventListener("pointerup", handleGlobalPointerUp);
-
-    return () => {
-      document.removeEventListener("pointerup", handleGlobalPointerUp);
-    };
-  }, [resizableHandlePointerDown]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  } else if (error) {
+  if (error) {
     return (
       <div className="text-red-500">
         <p>Error: {error}</p>
@@ -474,163 +439,13 @@ const BacktestResultsView = ({
   }
 
   return (
-    <PanelGroup
-      autoSaveId={"quanthive-dashboard-panel-group"}
-      direction="horizontal"
-      className="flex flex-row w-full gap-6 mt-6 h-full"
-    >
-      <Panel defaultSize={70} minSize={75} className="h-full">
-        <h1 className="text-2xl font-light">Result Highlights</h1>
-        <div className="flex flex-row gap-[10px] mt-3">
-          <Card className="bg-[#1B1B1D] border-2 border-[#2A2A2C] w-full h-28 rounded-xl overflow-hidden">
-            <CardContent className="flex flex-row justify-between h-full p-0">
-              <div className="flex flex-col mt-4 ml-4">
-                <h2 className="font-light text-lg text-[#909092]">
-                  Total Return
-                </h2>
-                <p className="text-3xl text-[#FEFEFE] mt-2">
-                  {results.metrics.total_return.toFixed(2)}
-                  <span className="text-xl text-[#909092] ml-1">%</span>
-                </p>
-              </div>
-              <div className="relative border-l-2 border-[#2A2A2C] h-full w-28 bg-[#111113] overflow-hidden">
-                <div className="absolute inset-0 w-full h-full shadow-[inset_0_0px_20px_rgba(0,0,0,1)] z-10" />
-                <div className="absolute top-0 left-0 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-0 right-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
+    <div className="w-full h-full flex flex-col overflow-auto custom-scrollbar pr-2">
+      <ResultMetrics metrics={results.metrics} />
 
-                <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-1/2 right-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#1B1B1D] border border-[#323234] rounded-md">
-                  main
-                </div>
-                <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-
-                <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute bottom-0 right-1/2 left-1/2 translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute bottom-0 right-0 translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-[#1B1B1D] border-2 border-[#2A2A2C] w-full h-28 rounded-xl overflow-hidden">
-            <CardContent className="flex flex-row justify-between h-full p-0">
-              <div className="flex flex-col mt-4 ml-4">
-                <h2 className="font-light text-lg text-[#909092]">
-                  Total Return
-                </h2>
-                <p className="text-3xl text-[#FEFEFE] mt-2">
-                  {results.metrics.total_return.toFixed(2)}
-                  <span className="text-xl text-[#909092] ml-1">%</span>
-                </p>
-              </div>
-              <div className="relative border-l-2 border-[#2A2A2C] h-full w-28 bg-[#111113] overflow-hidden">
-                <div className="absolute inset-0 w-full h-full shadow-[inset_0_0px_20px_rgba(0,0,0,1)] z-10" />
-                <div className="absolute top-0 left-0 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-0 right-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-
-                <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-1/2 right-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#1B1B1D] border border-[#323234] rounded-md">
-                  main
-                </div>
-                <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-
-                <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute bottom-0 right-1/2 left-1/2 translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute bottom-0 right-0 translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-[#1B1B1D] border-2 border-[#2A2A2C] w-full h-28 rounded-xl overflow-hidden">
-            <CardContent className="flex flex-row justify-between h-full p-0">
-              <div className="flex flex-col mt-4 ml-4">
-                <h2 className="font-light text-lg text-[#909092]">
-                  Total Return
-                </h2>
-                <p className="text-3xl text-[#FEFEFE] mt-2">
-                  {results.metrics.total_return.toFixed(2)}
-                  <span className="text-xl text-[#909092] ml-1">%</span>
-                </p>
-              </div>
-              <div className="relative border-l-2 border-[#2A2A2C] h-full w-28 bg-[#111113] overflow-hidden">
-                <div className="absolute inset-0 w-full h-full shadow-[inset_0_0px_20px_rgba(0,0,0,1)] z-10" />
-                <div className="absolute top-0 left-0 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-0 right-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-
-                <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-1/2 right-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#1B1B1D] border border-[#323234] rounded-md">
-                  main
-                </div>
-                <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-
-                <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute bottom-0 right-1/2 left-1/2 translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute bottom-0 right-0 translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-[#1B1B1D] border-2 border-[#2A2A2C] w-full h-28 rounded-xl overflow-hidden">
-            <CardContent className="flex flex-row justify-between h-full p-0">
-              <div className="flex flex-col mt-4 ml-4">
-                <h2 className="font-light text-lg text-[#909092]">
-                  Total Return
-                </h2>
-                <p className="text-3xl text-[#FEFEFE] mt-2">
-                  {results.metrics.total_return.toFixed(2)}
-                  <span className="text-xl text-[#909092] ml-1">%</span>
-                </p>
-              </div>
-              <div className="relative border-l-2 border-[#2A2A2C] h-full w-28 bg-[#111113] overflow-hidden">
-                <div className="absolute inset-0 w-full h-full shadow-[inset_0_0px_20px_rgba(0,0,0,1)] z-10" />
-                <div className="absolute top-0 left-0 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-0 right-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-
-                <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute top-1/2 right-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#1B1B1D] border border-[#323234] rounded-md">
-                  main
-                </div>
-                <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-
-                <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute bottom-0 right-1/2 left-1/2 translate-y-1/2 -translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-                <div className="absolute bottom-0 right-0 translate-y-1/2 translate-x-1/2 w-11 h-11 bg-[#161617] border border-[#212123] rounded-md" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </Panel>
-
-      <div className="flex flex-col items-center justify-center">
-        <PanelResizeHandle
-          onPointerDown={() => {
-            setResizableHandlePointerDown(true);
-            setResizableHandlePointerUp(false);
-          }}
-          onPointerUp={() => {
-            setResizableHandlePointerDown(false);
-            setResizableHandlePointerUp(true);
-          }}
-          id="resize-handle"
-          className={`flex flex-col gap-1 px-1.5 py-2 rounded-full bg-card text-[#5E5E5E] border-2 border-[#5E5E5E] ${
-            resizableHandlePointerDown
-              ? "bg-card-foreground outline outline-2 outline-offset-2 outline-blue-400"
-              : "hover:bg-card-foreground hover:outline outline-2 outline-offset-2 outline-blue-400"
-          }`}
-        >
-          <div className="w-1 h-1 rounded-full bg-[#5E5E5E]" />
-          <div className="w-1 h-1 rounded-full bg-[#5E5E5E]" />
-          <div className="w-1 h-1 rounded-full bg-[#5E5E5E]" />
-        </PanelResizeHandle>
+      <div className="flex flex-1 gap-4 mt-4 flex-row">
+        <ReturnsComparisonChart data={returnsData} />
       </div>
-
-      <Panel collapsible minSize={17} defaultSize={20} className="h-full">
-        <RightPanel />
-      </Panel>
-    </PanelGroup>
+    </div>
   );
 };
 

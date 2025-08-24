@@ -98,8 +98,8 @@ axiosInstance.interceptors.request.use(
     console.log("Request URL:", config.url);
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log("✅ Authorization header set:", config.headers.Authorization);
+      (config.headers as any).Authorization = `Bearer ${token}`;
+      console.log("✅ Authorization header set:", (config.headers as any).Authorization);
     } else {
       console.log("❌ No token found, skipping Authorization header");
     }
@@ -129,10 +129,13 @@ axiosInstance.interceptors.response.use(
         // Dispatch logout action to clear Redux state
         store.dispatch(logout());
         
-        // Force redirect to login page
-        const currentPath = window.location.pathname;
-        if (currentPath !== "/login" && currentPath !== "/register") {
+        // Force redirect to login page with redirectTo to preserve context
+        const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        const isAuthPage = /\/login$|\/register$/.test(window.location.pathname);
+        if (!isAuthPage) {
           console.log("🔄 Redirecting to login due to expired/invalid token");
+          window.location.href = `/login?redirectTo=${encodeURIComponent(currentPath)}`;
+        } else {
           window.location.href = "/login";
         }
       }

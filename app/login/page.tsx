@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/auth";
 import { Card } from "@/components/ui/card";
 import { LogoHeader } from "@/components/logo-header";
@@ -10,18 +10,19 @@ import { LoginForm } from "@/components/login";
 // Login page with authentication redirect and modular components
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, isAdmin } = useAuth();
 
   useEffect(() => {
     // Redirect if already authenticated
     if (isAuthenticated) {
-      if (isAdmin) {
-        router.push("/admin");
-      } else {
-        router.push("/dashboard");
-      }
+      const redirectParam = searchParams.get("redirectTo");
+      const target =
+        (redirectParam && redirectParam.startsWith("/") && redirectParam) ||
+        (isAdmin ? "/admin" : "/dashboard");
+      router.replace(target);
     }
-  }, [isAuthenticated, isAdmin, router]);
+  }, [isAuthenticated, isAdmin, router, searchParams]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-black px-4 py-12">
