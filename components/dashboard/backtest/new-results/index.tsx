@@ -9,6 +9,7 @@ import Papa from "papaparse";
 import React, { useEffect, useState } from "react";
 import ResultMetrics from "../../result-metrics";
 import { ReturnsComparisonChart } from "../new-returns-comparison-chart";
+import { DrawdownChartFromReturns } from "../new-drawdown-chrt-from-returns";
 
 interface BacktestResultsProps {
   backtestId: string;
@@ -442,8 +443,9 @@ const BacktestResultsView = ({
     <div className="w-full h-full flex flex-col overflow-auto custom-scrollbar pr-2">
       <ResultMetrics metrics={results.metrics} />
 
-      <div className="flex flex-1 gap-4 mt-4 flex-row">
+      <div className="flex flex-row gap-4 mt-4">
         <ReturnsComparisonChart data={returnsData} />
+        <DrawdownChartFromReturns data={returnsData} />
       </div>
     </div>
   );

@@ -70,9 +70,7 @@ module.exports = {
           border: "hsl(var(--card-border))",
         },
         radio: {
-          background: "hsl(var(--radio-background))",
           border: "hsl(var(--radio-border))",
-          "active-foreground": "var(--radio-active-foreground)",
           "active-border": "var(--radio-active-border)",
         },
         draggable: {
@@ -115,6 +113,8 @@ module.exports = {
           "linear-gradient(90deg, #00254F , #003F87 , #004CA3 , #003470 100%)",
         tooltip_text_gradient:
           "linear-gradient(90deg, #B5D8FF , #96C7FF , #A3CEFF 100%)",
+        radio_background: "var(--radio-background)",
+        radio_active_foreground: "var(--radio-active-foreground)",
         blue_accent_gradient:
           "linear-gradient(180deg, #93C6FF 0%, #599BE6 31%, #93C6FF 67%, #467AB5 100%)",
         blue_accent_gradient_90deg:

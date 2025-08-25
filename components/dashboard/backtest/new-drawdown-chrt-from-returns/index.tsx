@@ -1,43 +1,32 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Line,
-  LineChart,
+  Area,
+  AreaChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
   CartesianGrid,
-  Legend,
 } from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReturnData } from "@/types/backtest-service";
-import { useEffect, useMemo, useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar, PlusIcon } from "lucide-react";
-import { format } from "date-fns";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import { PlusIcon } from "lucide-react";
 import CustomPopoverContent from "@/components/custom-popover-content";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { CustomCheckbox } from "@/components/custom-checkbox";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  CustomRadioGroup,
-  CustomRadioGroupItem,
-} from "@/components/custom-radio-group";
 import GraphSettings from "../graph-settings";
+import { useEffect, useState } from "react";
 import CustomYearMonthRange from "@/components/custom-year-month-range";
 
-interface ReturnsComparisonChartProps {
+interface DrawdownChartFromReturnsProps {
   data: ReturnData[];
 }
 
-export function ReturnsComparisonChart({ data }: ReturnsComparisonChartProps) {
+export function DrawdownChartFromReturns({
+  data,
+}: DrawdownChartFromReturnsProps) {
   const { theme } = useTheme();
 
   // Month-year values: YYYY-MM
@@ -105,7 +94,7 @@ export function ReturnsComparisonChart({ data }: ReturnsComparisonChartProps) {
     }
   }, [data]);
 
-  // Arrow function to filter by month-year range and update chart
+  // Filter function using month-year range
   const filterDate = (
     start: Date | string,
     end: Date | string
@@ -143,39 +132,16 @@ export function ReturnsComparisonChart({ data }: ReturnsComparisonChartProps) {
     return filtered;
   };
 
+  // Re-filter when dates change
   useEffect(() => {
-    // When start/end change, re-filter automatically (if both present)
     if (startDate && endDate) {
       filterDate(startDate, endDate);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate]);
 
-  // Calculate cumulative returns from the visible (filtered) data
-  const cumulativeData = visibleData.reduce((acc, current, index) => {
-    if (index === 0) {
-      acc.push({
-        date: new Date(current.date).toLocaleDateString(),
-        strategy: (1 + current.strategy_return) * 100 - 100,
-        benchmark: (1 + current.benchmark_return) * 100 - 100,
-      });
-      return acc;
-    }
-
-    const prevCumulative = acc[index - 1];
-    acc.push({
-      date: new Date(current.date).toLocaleDateString(),
-      strategy:
-        ((1 + prevCumulative.strategy / 100) * (1 + current.strategy_return) -
-          1) *
-        100,
-      benchmark:
-        ((1 + prevCumulative.benchmark / 100) * (1 + current.benchmark_return) -
-          1) *
-        100,
-    });
-    return acc;
-  }, [] as Array<{ date: string; strategy: number; benchmark: number }>);
+  // Calculate drawdown from visible (filtered) returns
+  const drawdownData = calculateDrawdown(visibleData);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -184,12 +150,8 @@ export function ReturnsComparisonChart({ data }: ReturnsComparisonChartProps) {
           <CardContent className="bg-[#222222] rounded-[10px] py-3 px-4">
             <p>{label}</p>
             <p className="text-sm">
-              <span className="text-[#84B869]">●</span> Strategy:{" "}
-              {payload[0].value.toFixed(2)}%
-            </p>
-            <p className="text-sm">
-              <span className="text-[#229EC4]">●</span> Benchmark:{" "}
-              {payload[1].value.toFixed(2)}%
+              <span className="text-[#E44245]">●</span> Drawdown:{" "}
+              {(payload[0].value * 100).toFixed(2)}%
             </p>
           </CardContent>
         </Card>
@@ -201,9 +163,7 @@ export function ReturnsComparisonChart({ data }: ReturnsComparisonChartProps) {
   return (
     <div className="flex flex-col flex-1">
       <div className="flex flex-row justify-between items-center">
-        <h1 className="text-2xl font-light">
-          Strategy v Benchmark Performance
-        </h1>
+        <h1 className="text-2xl font-light">Drawdown</h1>
         <div className="flex flex-row items-center gap-2 h-full">
           <Popover>
             <PopoverTrigger asChild>
@@ -226,6 +186,7 @@ export function ReturnsComparisonChart({ data }: ReturnsComparisonChartProps) {
                 <DotsHorizontalIcon className="w-5 h-5" />
               </div>
             </PopoverTrigger>
+
             <CustomPopoverContent
               align="end"
               sideOffset={12}
@@ -243,21 +204,14 @@ export function ReturnsComparisonChart({ data }: ReturnsComparisonChartProps) {
           </Popover>
         </div>
       </div>
-
       <Card className="w-full mt-3 bg-[#1B1B1D] border-2 border-[#2A2A2C]">
         <CardContent className="p-6 pt-4">
           <div className="flex flex-row justify-between items-center mb-2">
             <legend className="flex flex-row gap-6 items-center">
               <div className="flex flex-row gap-2 items-center">
-                <div className="size-4 bg-green_icon_legend_gradient" />
-                <span className="text-transparent bg-clip-text bg-green_text_legend_gradient">
-                  Strategy
-                </span>
-              </div>
-              <div className="flex flex-row gap-2 items-center">
-                <div className="size-4 bg-blue_icon_legend_gradient" />
-                <span className="text-transparent bg-clip-text bg-blue_text_legend_gradient">
-                  Benchmark
+                <div className="size-4 bg-red_icon_legend_gradient" />
+                <span className="text-transparent bg-clip-text bg-red_text_legend_gradient">
+                  Drawdown
                 </span>
               </div>
             </legend>
@@ -273,8 +227,8 @@ export function ReturnsComparisonChart({ data }: ReturnsComparisonChartProps) {
           </div>
           <div className="h-80 mt-4 select-none">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={cumulativeData}
+              <AreaChart
+                data={drawdownData}
                 margin={{ top: 0, right: 20, left: 0, bottom: 16 }}
               >
                 {showGridLines && (
@@ -308,42 +262,57 @@ export function ReturnsComparisonChart({ data }: ReturnsComparisonChartProps) {
                   fontSize={14}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(value) => `${value.toFixed(0)}%`}
+                  tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
+                  domain={[0, "dataMax + 0.05"]}
                   label={
                     showLabels
                       ? {
                           angle: -90,
                           position: "insideLeft",
-                          value: "Returns (%)",
+                          value: "Drawdown (%)",
                         }
                       : undefined
                   }
+                  reversed // Reverse axis to show drawdown as negative from top
                 />
                 <Tooltip content={<CustomTooltip />} />
-                {/* <Legend /> */}
-                <Line
+                <Area
                   type="monotone"
-                  dataKey="strategy"
-                  name="Strategy"
-                  stroke="#84B869"
+                  dataKey="drawdown"
+                  stroke="#E44245"
+                  fill="rgba(239, 68, 68, 0.2)"
                   strokeWidth={3}
-                  dot={false}
-                  activeDot={{ r: 4 }}
                 />
-                <Line
-                  type="monotone"
-                  dataKey="benchmark"
-                  name="Benchmark"
-                  stroke="#229EC4"
-                  strokeWidth={3}
-                  dot={false}
-                  activeDot={{ r: 4 }}
-                />
-              </LineChart>
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
     </div>
   );
+}
+
+// Function to calculate drawdown from returns
+function calculateDrawdown(
+  data: ReturnData[]
+): { date: string; drawdown: number }[] {
+  // Calculate cumulative returns
+  let cumulativeReturn = 1;
+  let peakValue = 1;
+
+  return data.map((point) => {
+    // Update cumulative return
+    cumulativeReturn = cumulativeReturn * (1 + point.strategy_return);
+
+    // Update peak value if we have a new high
+    peakValue = Math.max(peakValue, cumulativeReturn);
+
+    // Calculate drawdown as the percentage decline from the peak
+    const drawdown = cumulativeReturn / peakValue - 1;
+
+    return {
+      date: new Date(point.date).toLocaleDateString(),
+      drawdown: Math.abs(Math.min(0, drawdown)), // Convert negative values to positive for display
+    };
+  });
 }
