@@ -14,9 +14,9 @@ const AdminPage = () => {
   const { user } = useAuth();
 
   return (
-    <div className="flex-1 space-y-8 px-2">
-      <div className="flex flex-col items-start justify-between space-y-2">
-        <h1 className="text-2xl tracking-wide">Admin Dashboard</h1>
+    <div className="flex-1 space-y-8 px-2 mt-4">
+      <div className="flex flex-col items-start justify-between">
+        <h1 className="text-2xl font-light">Admin Dashboard</h1>
         <p className="text-muted-text">Welcome back, Admin {user?.username}!</p>
       </div>
       <Tabs defaultValue="users" className="space-y-4">

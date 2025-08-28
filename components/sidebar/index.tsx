@@ -16,6 +16,7 @@ import {
   FlaskConical,
   Headset,
   ChevronUp,
+  LockKeyhole,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isUserPopoverOpen, setIsUserPopoverOpen] = useState(false);
@@ -203,6 +204,23 @@ export function Sidebar() {
           <div className="flex-1 overflow-auto pl-0.5 pr-0.5 py-0.5 mt-3">
             <div className="relative w-full transition-all duration-300 ease-in-out">
               <nav className="flex flex-col flex-1 gap-1.5">
+                {isAdmin && (
+                  <div className="mb-2">
+                    <Link
+                      href="/admin"
+                      className={cn(
+                        "flex items-center rounded-md pl-4 py-1 hover:bg-button-focus",
+                        pathname === "/admin" || pathname.startsWith("/admin")
+                          ? "bg-button-focus shadow-xl"
+                          : ""
+                      )}
+                    >
+                      <LockKeyhole className={cn("h-4 w-4 mr-3")} />
+                      <span>Admin</span>
+                    </Link>
+                    <hr className="border-muted-foreground rounded-full mt-4" />
+                  </div>
+                )}
                 {navigation.map((item) => (
                   <div key={item.name} className="flex flex-col">
                     <Link
