@@ -38,10 +38,10 @@ const navigation = [
     href: "/backtest",
     icon: FlaskConical,
     items: [
-      { name: "Overview", href: "/backtest/overview" },
-      { name: "Trades", href: "/backtest/trades" },
-      { name: "Performance", href: "/backtest/performance" },
-      { name: "Strategy", href: "/backtest/strategy" },
+      { name: "Overview", href: "/backtest/results/[id]/overview" },
+      { name: "Trades", href: "/backtest/results/[id]/trades" },
+      { name: "Performance", href: "/backtest/results/[id]/performance" },
+      { name: "Strategy", href: "/backtest/results/[id]/strategy" },
     ],
   },
   { name: "History", href: "/history", icon: History },
@@ -57,6 +57,105 @@ export function Sidebar() {
   const [isUserPopoverOpen, setIsUserPopoverOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const { latestBacktest, setLatestBacktest } = useDashboardContext();
+
+  // Fill a template path like "/a/[id]/b/[slug]" from the currentPath by position
+  const fillTemplateFromPath = (templateHref: string, currentPath: string) => {
+    const tSegs = templateHref.split("/").filter(Boolean);
+    const cSegs = currentPath.split("/").filter(Boolean);
+    if (cSegs.length < tSegs.length) return null;
+
+    const out: string[] = [];
+    for (let i = 0; i < tSegs.length; i++) {
+      const t = tSegs[i];
+      const c = cSegs[i];
+      if (/^\[[^/]+\]$/.test(t)) {
+        if (!c) return null;
+        out.push(c);
+      } else if (t === c) {
+        out.push(c);
+      } else {
+        // static segment mismatch; cannot reliably fill
+        return null;
+      }
+    }
+    return "/" + out.join("/");
+  };
+
+  // Helper: resolve dynamic params like [id] in sidebar subitem hrefs (generic, non-domain-specific)
+  const resolveSubHrefGeneric = (
+    templateHref: string,
+    parentHref: string,
+    currentPath: string
+  ) => {
+    if (!templateHref) return templateHref;
+
+    const hasDynamic = /\[[^/]+?\]/.test(templateHref);
+    if (!hasDynamic) return templateHref;
+
+    // 1) Try to fill from the current path by aligning segments
+    const filledFromPath = fillTemplateFromPath(templateHref, currentPath);
+    if (filledFromPath) return filledFromPath;
+
+    // 2) Fallback: navigate to base static prefix before first dynamic segment or parent
+    const parts = templateHref.split("/");
+    const baseParts: string[] = [];
+    for (const seg of parts) {
+      if (!seg) continue;
+      if (/\[[^/]+?\]/.test(seg)) break;
+      baseParts.push(seg);
+    }
+    const basePath = "/" + baseParts.join("/");
+    return parentHref || basePath || "/";
+  };
+
+  // Backtest-only resolver: handles /backtest paths using latestBacktest id when needed
+  const resolveBacktestHref = (
+    templateHref: string,
+    parentHref: string,
+    currentPath: string
+  ) => {
+    if (!templateHref) return templateHref;
+
+    const hasDynamic = /\[[^/]+?\]/.test(templateHref);
+    if (!hasDynamic) return templateHref;
+
+    // 1) Attempt to align with current path (useful when already within a backtest route)
+    const filledFromPath = fillTemplateFromPath(templateHref, currentPath);
+    if (filledFromPath) return filledFromPath;
+
+    // 2) Use latestBacktest id for [id]
+    if (templateHref.includes("[id]")) {
+      const id = (latestBacktest as any)?.backtest_id;
+      if (id) return templateHref.replace("[id]", id);
+    }
+
+    // 3) Fallback to static base or parent
+    const parts = templateHref.split("/");
+    const baseParts: string[] = [];
+    for (const seg of parts) {
+      if (!seg) continue;
+      if (/\[[^/]+?\]/.test(seg)) break;
+      baseParts.push(seg);
+    }
+    const basePath = "/" + baseParts.join("/");
+    return parentHref || basePath || "/";
+  };
+
+  // Helper: check if current path matches a template with dynamic segments like [id]
+  const isTemplatePathActive = (templateHref: string, currentPath: string) => {
+    if (!templateHref) return false;
+    const TOKEN = "__DYN__";
+    // Replace all [param] with a token, escape the rest, then swap token for a wildcard segment
+    const pre = templateHref.replace(/\[[^/]+?\]/g, TOKEN);
+    const escaped = pre.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pattern =
+      "^" + escaped.replace(new RegExp(TOKEN, "g"), "[^/]+") + "(?:$|/)?";
+    try {
+      return new RegExp(pattern).test(currentPath);
+    } catch {
+      return false;
+    }
+  };
 
   useEffect(() => {
     backtestService
@@ -239,21 +338,40 @@ export function Sidebar() {
                       pathname.startsWith(item.href)) &&
                       item.items && (
                         <div className="flex flex-col rounded-md mt-1 ml-3 bg-card p-1">
-                          {item.items.map((subItem) => (
-                            <Link
-                              key={subItem.name}
-                              href={subItem.href}
-                              className={cn(
-                                "flex items-center rounded-md pl-4 py-1",
-                                pathname === subItem.href ||
-                                  pathname.startsWith(subItem.href)
-                                  ? "bg-button-focus shadow-xl"
-                                  : "hover:bg-button-focus"
-                              )}
-                            >
-                              {!isCollapsed && <span>{subItem.name}</span>}
-                            </Link>
-                          ))}
+                          {item.items.map((subItem) => {
+                            const active =
+                              isTemplatePathActive(subItem.href, pathname) ||
+                              (!/\[[^/]+?\]/.test(subItem.href) &&
+                                (pathname === subItem.href ||
+                                  pathname.startsWith(subItem.href)));
+
+                            const subHref = subItem.href.startsWith("/backtest")
+                              ? resolveBacktestHref(
+                                  subItem.href,
+                                  item.href,
+                                  pathname
+                                )
+                              : resolveSubHrefGeneric(
+                                  subItem.href,
+                                  item.href,
+                                  pathname
+                                );
+
+                            return (
+                              <Link
+                                key={subItem.name}
+                                href={subHref}
+                                className={cn(
+                                  "flex items-center rounded-md pl-4 py-1",
+                                  active
+                                    ? "bg-button-focus shadow-xl"
+                                    : "hover:bg-button-focus"
+                                )}
+                              >
+                                {!isCollapsed && <span>{subItem.name}</span>}
+                              </Link>
+                            );
+                          })}
                         </div>
                       )}
                   </div>

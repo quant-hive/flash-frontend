@@ -55,14 +55,12 @@ export default function BacktestPage({ params }: BacktestPageProps) {
     return <ErrorState error={error} onClose={handleClose} />;
   }
 
-  return (
-    <>
-      {backtestResults && (
-        <BacktestResultsView
-          backtestId={resolvedParams.id}
-          backtestResults={backtestResults}
-        />
-      )}
-    </>
-  );
+  if (backtestResults) {
+    return (
+      <BacktestResultsView
+        backtestId={resolvedParams.id}
+        backtestResults={backtestResults}
+      />
+    );
+  }
 }

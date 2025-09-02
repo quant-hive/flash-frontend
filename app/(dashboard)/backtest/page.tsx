@@ -16,7 +16,7 @@ const Backtest = () => {
   }, [latestBacktest]);
 
   if (previousBacktest && previousBacktest.status === "completed") {
-    redirect(`/backtest/results/${previousBacktest.backtest_id}`);
+    redirect(`/backtest/results/${previousBacktest.backtest_id}/overview`);
   }
 
   return <BacktestForm />;
