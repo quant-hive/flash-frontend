@@ -69,6 +69,7 @@ export interface Trade {
   exit_price: number;
   pnl: number;
   returns_percentage: number;
+  position_size: number;
 }
 
 export interface ReturnData {

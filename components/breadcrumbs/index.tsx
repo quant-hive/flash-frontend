@@ -21,7 +21,7 @@ const Breadcrumbs = () => {
   return (
     <Breadcrumb>
       <BreadcrumbList className="gap-1 sm:gap-1 font-light text-muted-text">
-        <BreadcrumbItem>
+        {/* <BreadcrumbItem>
           <BreadcrumbLink href={"https://www.quanthive.in/"}>
             QuantHive
           </BreadcrumbLink>
@@ -30,7 +30,7 @@ const Breadcrumbs = () => {
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Flash</BreadcrumbLink>
         </BreadcrumbItem>
-        <BreadcrumbSeparator>{"/"}</BreadcrumbSeparator>
+        <BreadcrumbSeparator>{"/"}</BreadcrumbSeparator> */}
         {breadcrumbs.map((breadcrumb, index) => (
           <Fragment key={index}>
             <BreadcrumbItem>

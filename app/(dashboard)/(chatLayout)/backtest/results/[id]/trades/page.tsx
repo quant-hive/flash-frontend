@@ -5,6 +5,10 @@ import { useBacktestResults } from "@/context/backtest-results-context";
 import { LoadingState } from "@/components/dashboard/backtest/loading-state";
 import { ErrorState } from "@/components/dashboard/backtest/error-state";
 import ResultMetricCard from "@/components/result-metric-card";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import CustomPopoverContent from "@/components/custom-popover-content";
+import TradeTable from "@/components/dashboard/backtest/trade-table";
 
 // Format number in Indian numbering system with conditional decimals
 // - If integer: 1 decimal place (e.g., 1,23,456.0)
@@ -101,7 +105,7 @@ const Trades = () => {
       {trades && trades.length > 0 ? (
         <>
           <div className="flex flex-col">
-            <h1 className="text-2xl font-light">Trades</h1>
+            <h1 className="text-2xl font-light">Trade Report</h1>
             <div className="grid grid-cols-4 gap-[10px] mt-3">
               <ResultMetricCard
                 title="Total Trades"
@@ -154,6 +158,40 @@ const Trades = () => {
               {viewMoreMetrics ? "view less" : "view more"}
             </button>
             <hr className="w-full border bg-[#2B2B2B]" />
+          </div>
+
+          <div className="flex flex-col mt-6 w-full">
+            <div className="flex flex-row items-center justify-between">
+              <h1 className="text-2xl font-light">Trades</h1>
+              <div className="flex flex-row items-start gap-2">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder="Search trades"
+                  className="w-64 px-3 py-1 bg-[#030303] text-white placeholder:text-[#474747] rounded-md focus:outline-none focus:ring-2 ring-white"
+                />
+
+                <Popover>
+                  <PopoverTrigger>
+                    <div className="flex items-center justify-center px-2.5 py-1.5 bg-button hover:bg-button/35 rounded-lg">
+                      <DotsHorizontalIcon className="w-5 h-5" />
+                    </div>
+                  </PopoverTrigger>
+                  <CustomPopoverContent
+                    align="end"
+                    sideOffset={12}
+                    className="text-foreground"
+                  >
+                    Settings
+                  </CustomPopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <TradeTable data={trades} />
+            </div>
           </div>
         </>
       ) : (
