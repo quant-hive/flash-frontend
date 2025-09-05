@@ -20,3 +20,14 @@ export function formatDate(dateInput?: string | Date): string {
     return "N/A";
   }
 }
+
+// Format number in Indian numbering system with conditional decimals
+// - If integer: 1 decimal place (e.g., 1,23,456.0)
+// - If has decimals: exactly 2 decimal places (e.g., 1,23,456.78)
+export function formatIndianNumber(value: number) {
+  const hasDecimals = Math.abs(value % 1) > 1e-9;
+  return new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: hasDecimals ? 2 : 1,
+    maximumFractionDigits: hasDecimals ? 2 : 1,
+  }).format(value);
+}

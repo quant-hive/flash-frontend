@@ -141,6 +141,8 @@ module.exports = {
           "linear-gradient(135deg, #FF9395 0%, #B36869 32%, #FF9395 66%, #A15C5D 100%)",
         red_text_legend_gradient:
           "linear-gradient(90deg, #FF9395 0%, #B36869 50%, #FF9395 75%, #A15C5D 100%)",
+        green_gradient_text:
+          "linear-gradient(90deg, #CBFFB4 0%, #8BD86A 50%, #A6FF80 100%)",
       },
     },
   },

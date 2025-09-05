@@ -9,17 +9,7 @@ import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import CustomPopoverContent from "@/components/custom-popover-content";
 import TradeTable from "@/components/dashboard/backtest/trade-table";
-
-// Format number in Indian numbering system with conditional decimals
-// - If integer: 1 decimal place (e.g., 1,23,456.0)
-// - If has decimals: exactly 2 decimal places (e.g., 1,23,456.78)
-function formatIndianNumber(value: number) {
-  const hasDecimals = Math.abs(value % 1) > 1e-9;
-  return new Intl.NumberFormat("en-IN", {
-    minimumFractionDigits: hasDecimals ? 2 : 1,
-    maximumFractionDigits: hasDecimals ? 2 : 1,
-  }).format(value);
-}
+import { formatIndianNumber } from "@/lib/utils";
 
 const Trades = () => {
   const { loading, error } = useBacktestResults();
