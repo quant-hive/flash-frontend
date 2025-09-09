@@ -180,7 +180,7 @@ const Trades = () => {
             </div>
 
             <div className="mt-4">
-              <TradeTable data={trades} />
+              <TradeTable data={filteredTrades} />
             </div>
           </div>
         </>
