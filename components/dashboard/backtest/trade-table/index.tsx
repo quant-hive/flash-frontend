@@ -27,6 +27,12 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import {
+  CustomSelect,
+  CustomSelectContent,
+  CustomSelectItem,
+  CustomSelectTrigger,
+} from "@/components/custom-select";
 
 const TradeTable = ({ data }: { data: Trade[] }) => {
   const pageSize = 6;
@@ -47,7 +53,7 @@ const TradeTable = ({ data }: { data: Trade[] }) => {
           const selected =
             (typeof filterVal === "string" && filterVal) || "all";
           return (
-            <Select
+            <CustomSelect
               value={selected}
               onValueChange={(value) => {
                 if (value === "all") {
@@ -58,7 +64,7 @@ const TradeTable = ({ data }: { data: Trade[] }) => {
                 setPageIndex(0);
               }}
             >
-              <SelectTrigger className="bg-transparent focus:ring-0 focus:outline-0 focus:ring-offset-0 border-none h-full p-0 [&_svg]:hidden">
+              <CustomSelectTrigger className="bg-transparent focus:ring-0 focus:outline-0 focus:ring-offset-0 border-none h-full p-0 [&_svg]:hidden">
                 <div className="flex flex-col items-start justify-end mt-4">
                   <p className="text-primary text-lg">Ticker</p>
 
@@ -72,21 +78,27 @@ const TradeTable = ({ data }: { data: Trade[] }) => {
                     {selected === "all" ? "ALL" : selected}
                   </div>
                 </div>
-              </SelectTrigger>
+              </CustomSelectTrigger>
 
-              <SelectContent
+              <CustomSelectContent
                 align="start"
                 sideOffset={12}
-                className="text-primary"
+                className="text-primary border-[#97EA74] border-[1px]"
               >
-                <SelectItem value="all">All</SelectItem>
+                <CustomSelectItem value="all" className="text-[#C3FFAA]">
+                  All
+                </CustomSelectItem>
                 {uniqueTickers.map((ticker) => (
-                  <SelectItem key={ticker} value={ticker}>
+                  <CustomSelectItem
+                    key={ticker}
+                    value={ticker}
+                    className="text-[#C3FFAA]"
+                  >
                     {ticker}
-                  </SelectItem>
+                  </CustomSelectItem>
                 ))}
-              </SelectContent>
-            </Select>
+              </CustomSelectContent>
+            </CustomSelect>
           );
         },
       },
