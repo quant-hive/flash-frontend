@@ -133,6 +133,10 @@ module.exports = {
           "linear-gradient(135deg, #9CFF93 0%, #6DB368 32%, #97FF93 66%, #5EA15C 100%)",
         green_text_legend_gradient:
           "linear-gradient(90deg, #9CFF93 0%, #6DB368 50%, #97FF93 75%, #5EA15C 100%)",
+        dark_green_icon_legend_gradient:
+          "linear-gradient(135deg, #51FF2A 0%, #26A10B 32%, #50FE29 66%, #1C8F02 100%)",
+        dark_green_text_legend_gradient:
+          "linear-gradient(135deg, #51FF2A 0%, #26A10B 32%, #50FE29 66%, #1C8F02 100%)",
         blue_icon_legend_gradient:
           "linear-gradient(135deg, #93E2FF 0%, #689FB3 32%, #93D9FF 66%, #5C95A1 100%)",
         blue_text_legend_gradient:
@@ -141,6 +145,18 @@ module.exports = {
           "linear-gradient(135deg, #FF9395 0%, #B36869 32%, #FF9395 66%, #A15C5D 100%)",
         red_text_legend_gradient:
           "linear-gradient(90deg, #FF9395 0%, #B36869 50%, #FF9395 75%, #A15C5D 100%)",
+        dark_red_icon_legend_gradient:
+          "linear-gradient(135deg, #FF462A 0%, #C7331D 32%, #FF4124 66%, #A11500 100%)",
+        dark_red_text_legend_gradient:
+          "linear-gradient(135deg, #FF462A 0%, #C7331D 32%, #FF4124 66%, #A11500 100%)",
+        yellow_icon_legend_gradient:
+          "linear-gradient(135deg, #F4FF2A 0%, #A9B114 32%, #EFFB21 66%, #909808 100%)",
+        yellow_text_legend_gradient:
+          "linear-gradient(90deg, #F4FF2A 0%, #A9B114 50%, #EFFB21 75%, #909808 100%)",
+        orange_icon_legend_gradient:
+          "linear-gradient(135deg, #FFA62A 0%, #C37B18 32%, #FFA425 66%, #A26107 100%)",
+        orange_text_legend_gradient:
+          "linear-gradient(90deg, #FFA62A 0%, #C37B18 50%, #FFA425 75%, #A26107 100%)",
         green_gradient_text:
           "linear-gradient(90deg, #CBFFB4 0%, #8BD86A 50%, #A6FF80 100%)",
         red_gradient_text:

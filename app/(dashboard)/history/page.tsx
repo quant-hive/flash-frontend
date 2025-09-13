@@ -84,7 +84,7 @@ export default function HistoryPage() {
     <div className="flex flex-col w-full gap-6 mt-6 h-full">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Backtest History</h1>
-        <Button onClick={() => router.push("/dashboard/compare")}>
+        <Button onClick={() => router.push("/compare")}>
           <GitCompare className="mr-2 h-4 w-4" />
           Compare Backtests
         </Button>

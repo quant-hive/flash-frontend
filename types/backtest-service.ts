@@ -27,7 +27,9 @@ export interface BacktestMetrics {
   win_rate: number;
   beta: number;
   alpha: number;
-  [key: string]: number | string;
+  trades: number;
+  initial_value: number;
+  final_value: number;
 }
 
 export interface BacktestResults {

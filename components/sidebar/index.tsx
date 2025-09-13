@@ -34,7 +34,7 @@ const navigation = [
   // { name: "Analytics", href: "/dashboard/analytics", icon: BarChart2 },
   // { name: "Compare", href: "/dashboard/compare", icon: GitCompare },
   {
-    name: "Backtests",
+    name: "Backtest",
     href: "/backtest",
     icon: FlaskConical,
     items: [
