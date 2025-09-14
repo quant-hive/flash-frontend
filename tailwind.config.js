@@ -107,6 +107,7 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
         "fade-out": "fade-out 0.3s ease-out",
+        shimmer: "shimmer 0.3s linear",
       },
       backgroundImage: {
         tooltip_bg_gradient:
@@ -163,6 +164,16 @@ module.exports = {
           "linear-gradient(90deg, #FFB4B5 0%, #D86A6C 50%, #FF8082 100%)",
         green_table_filter_select_foreground:
           "linear-gradient(125deg, #97EA74 0%, #C3FFAA 50%, #97EA74 100%)",
+      },
+      keyframes: {
+        shimmer: {
+          from: {
+            backgroundPosition: "0 0",
+          },
+          to: {
+            backgroundPosition: "-150% 0",
+          },
+        },
       },
     },
   },
