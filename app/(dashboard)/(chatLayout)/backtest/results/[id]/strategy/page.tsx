@@ -74,10 +74,6 @@ const Strategy = () => {
           font-family: "Luxe Uno", monospace !important;
         }
 
-        .view-lines {
-          margin-left: 10px !important;
-        }
-
         @keyframes pulseShadow {
           0% {
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
@@ -91,7 +87,7 @@ const Strategy = () => {
         }
 
         .copy-button:hover {
-          animation: pulseShadow 1.5s ease-in-out infinite;
+          animation: pulseShadow 2s ease-in-out infinite;
         }
       `}</style>
 
