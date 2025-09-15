@@ -68,7 +68,7 @@ const BacktestResultsView = ({
     <div className="w-full h-full flex flex-col overflow-auto custom-scrollbar pr-2">
       <ResultMetrics metrics={results.metrics} />
 
-      <div className="flex flex-row gap-4 mt-4">
+      <div className="flex flex-row gap-4 mt-8">
         <ReturnsComparisonChart data={returnsData} />
         <DrawdownChartFromReturns data={returnsData} />
       </div>

@@ -56,8 +56,13 @@ const ResultMetrics = ({ metrics }: { metrics: BacktestMetrics }) => {
           />
         </div>
 
-        {viewMoreMetrics && (
-          <div className="grid grid-cols-4 gap-[10px] items-center mt-4">
+        <div 
+          className={`grid grid-cols-4 gap-[10px] items-center transition-all duration-500 ease-in-out overflow-hidden ${
+            viewMoreMetrics 
+              ? 'opacity-100 max-h-32 transform translate-y-0 mt-4' 
+              : 'opacity-0 max-h-0 transform -translate-y-4 mt-0'
+          }`}
+        >
             <ResultMetricCard
               title="Alpha (annualized)"
               value={metrics.alpha}
@@ -76,9 +81,9 @@ const ResultMetrics = ({ metrics }: { metrics: BacktestMetrics }) => {
               shadow="yellow"
             />
           </div>
-        )}
+        
       </div>
-      <div className="flex flex-row items-center w-full mt-[40px]">
+      <div className="flex flex-row items-center w-full mt-6">
         <hr className="w-full border bg-[#2B2B2B]" />
         <button
           onClick={() => setViewMoreMetrics(!viewMoreMetrics)}
