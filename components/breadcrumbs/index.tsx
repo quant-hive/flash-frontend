@@ -29,8 +29,8 @@ const Breadcrumbs = () => {
         <BreadcrumbSeparator>{"/"}</BreadcrumbSeparator>
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Flash</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>{"/"}</BreadcrumbSeparator> */}
+        </BreadcrumbItem> */}
+        <BreadcrumbSeparator>{"/"}</BreadcrumbSeparator>
         {breadcrumbs.map((breadcrumb, index) => (
           <Fragment key={index}>
             <BreadcrumbItem>

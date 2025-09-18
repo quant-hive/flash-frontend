@@ -164,6 +164,13 @@ module.exports = {
           "linear-gradient(90deg, #FFB4B5 0%, #D86A6C 50%, #FF8082 100%)",
         green_table_filter_select_foreground:
           "linear-gradient(125deg, #97EA74 0%, #C3FFAA 50%, #97EA74 100%)",
+        blue_accent_gradient_border:
+          "linear-gradient(135deg, #C8E6FF 0%, #5DB5FF 50%, #175D98 100%)",
+        profile_banner: "url('/images/webp/profile-banner.webp')",
+        profile_badge_gradient:
+          "linear-gradient(135deg, #FFC375 0%, #C9944E 31%, #FFC375 75%, #BA7F32 100%)",
+        btn_thumb_gradient:
+          "linear-gradient(135deg, #FFC375 0%, #C9944E 31%, #FFC375 70%, #BA7F32 100%)",
       },
       keyframes: {
         shimmer: {
@@ -177,5 +184,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("tailwindcss-border-image"),
+  ],
 };
