@@ -48,7 +48,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
  */
 export function RegisterForm() {
   const router = useRouter();
-  const { register: registerUser } = useAuth();
+  const { register: registerUser, login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
@@ -74,24 +74,53 @@ export function RegisterForm() {
     setSuccess(false);
 
     try {
+      // First, register the user
       const response = await registerUser({
         name: data.name,
         username: data.username,
         email: data.email,
         password: data.password,
       });
-      setSuccess(true);
-      // Redirect based on user role after a short delay to show success message
-      setTimeout(() => {
-        if (response.user.role === "admin") {
-          router.push("/admin");
-        } else {
-          router.push("/dashboard");
-        }
-      }, 1500);
-    } catch (err: any) {
+
+      // Registration successful, now try to log them in
+      try {
+        await login({
+          username: data.username,
+          password: data.password,
+        });
+
+        // Both registration and login successful
+        setSuccess(true);
+
+        // Redirect based on user role after a short delay to show success message
+        setTimeout(() => {
+          if (response.user.role === "admin") {
+            router.push("/admin");
+          } else {
+            router.push("/dashboard");
+          }
+        }, 1500);
+      } catch (loginErr: any) {
+        // Registration succeeded but login failed
+        setError(
+          `Account created successfully, but auto-login failed: ${
+            loginErr.response?.data?.message ||
+            loginErr.message ||
+            "Please try logging in manually."
+          }`
+        );
+
+        // Still redirect to login page after showing error
+        setTimeout(() => {
+          router.push("/login");
+        }, 3000);
+      }
+    } catch (registerErr: any) {
+      // Registration failed
       setError(
-        err.response?.data?.message || "Registration failed. Please try again."
+        registerErr.response?.data?.message ||
+          registerErr.message ||
+          "Registration failed. Please try again."
       );
     } finally {
       setIsLoading(false);

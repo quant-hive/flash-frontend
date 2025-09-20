@@ -59,7 +59,7 @@ const ExplainableAI = () => {
       </div>
 
       <Card className="bg-card border-2 border-card-border w-full mt-4 h-full">
-        <CardContent className="pt-4 px-8 text-center">
+        <CardContent className="pt-4 px-8 text-center h-full">
           <span className=" text-xl bg-clip-text text-transparent bg-text_accent_gradient">
             Explainable AI
             <sup className="bg-clip-text text-transparent bg-text_accent_gradient text-[10px] -top-2">
@@ -69,6 +69,15 @@ const ExplainableAI = () => {
           </span>
 
           <hr className="my-3 h-0.5 bg-card-border" />
+
+          <div className="flex flex-col items-center justify-center w-full h-full">
+            <img src="/images/webp/oops.webp" alt="No Notifications" />
+
+            <p className="text-center text-lg text-[#5A5A5A] mt-8">Oops!</p>
+            <p className="text-center text-sm text-[#5A5A5A]">
+              It looks like there's nothing to show here at the moment
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
