@@ -110,7 +110,7 @@ const MonthlyReturnsHeatmap = ({ returnsData }: MonthlyReturnsHeatmapProps) => {
     <div className="mt-4 flex flex-col gap-2">
       {/* Heatmap rows */}
       {heatmapData.map((yearData) => (
-        <div key={yearData.year} className="flex items-center">
+        <div key={yearData.year} className="flex items-center select-none">
           {/* Year label and Month cells row with border */}
           <div
             className="flex flex-1 h-16"
@@ -139,7 +139,7 @@ const MonthlyReturnsHeatmap = ({ returnsData }: MonthlyReturnsHeatmapProps) => {
                 }}
               >
                 {/* Value text */}
-                <p className="text-base relative z-10 text-[#909092]">
+                <p className="text-sm relative z-10 text-[#909092]">
                   {value !== null ? (
                     <>
                       {value === 0 ? "0" : value.toFixed(2)}

@@ -171,6 +171,12 @@ module.exports = {
           "linear-gradient(135deg, #FFC375 0%, #C9944E 31%, #FFC375 75%, #BA7F32 100%)",
         btn_thumb_gradient:
           "linear-gradient(135deg, #FFC375 0%, #C9944E 31%, #FFC375 70%, #BA7F32 100%)",
+        explainable_ai_gradient:
+          "linear-gradient(180deg, #19191900 0%, #19191980 10%, #191919 100%)",
+        explainable_ai_dropdown_gradient:
+          "linear-gradient(180deg, #1B86FF 0%, #004797 30%, #1B86FF 65%, #004797 100%)",
+        explainable_ai_send_gradient:
+          "linear-gradient(90deg, #659BD6 0%, #A4CFFF 34%, #90C4FF 66%, #4F6782 100%)",
       },
       keyframes: {
         shimmer: {

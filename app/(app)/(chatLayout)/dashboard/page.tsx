@@ -12,6 +12,7 @@ import {
 import RightPanel from "@/components/dashboard/explainable-ai/page";
 import { Card, CardContent } from "@/components/ui/card";
 import BacktestForm from "@/components/dashboard/backtest/new-form";
+import ResultMetricCard from "@/components/result-metric-card";
 
 export default function DashboardPage() {
   return (
@@ -20,14 +21,30 @@ export default function DashboardPage() {
         <div className="flex flex-col">
           <h1 className="text-2xl font-light">Glance</h1>
           <div className="flex flex-row gap-4 mt-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <Card
-                key={index}
-                className="bg-card border-2 border-card-border w-full h-32"
-              >
-                <CardContent className="flex items-center justify-center h-full"></CardContent>
-              </Card>
-            ))}
+            <ResultMetricCard
+              title="Overall Risk Profile"
+              value="Moderate"
+              suffix=""
+              iconSrc={"/svgs/total-risk-profile.svg"}
+              iconAlt={"Risk Profile Icon"}
+              shadow={"yellow"}
+            />
+            <ResultMetricCard
+              title="Potential Opportunity"
+              value="5/12"
+              suffix=""
+              iconSrc={"/svgs/potential-opportunity.svg"}
+              iconAlt={"Potential Opportunity Icon"}
+              shadow={"green"}
+            />
+            <ResultMetricCard
+              title="Asset Under Management ($)"
+              value="62 Million"
+              suffix=""
+              iconSrc={"/svgs/asset-under-management.svg"}
+              iconAlt={"Asset Under Management Icon"}
+              shadow={"black"}
+            />
           </div>
         </div>
 

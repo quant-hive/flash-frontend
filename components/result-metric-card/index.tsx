@@ -11,6 +11,7 @@ const shadowMap: Record<ShadowVariant, string> = {
 };
 
 interface ResultMetricCardProps {
+  height?: string;
   title: string;
   value: number | string;
   suffix?: string;
@@ -20,6 +21,7 @@ interface ResultMetricCardProps {
 }
 
 export default function ResultMetricCard({
+  height = "h-24",
   title,
   value,
   suffix = "%",
@@ -33,7 +35,9 @@ export default function ResultMetricCard({
   const [initialDone, setInitialDone] = useState(false);
 
   return (
-    <Card className="bg-[#1B1B1D] border-2 border-[#2A2A2C] w-full h-24 rounded-xl overflow-hidden group">
+    <Card
+      className={`bg-[#1B1B1D] border-2 border-[#2A2A2C] w-full rounded-xl overflow-hidden group ${height}`}
+    >
       <style jsx global>{`
         @keyframes pulseShadow {
           0% {

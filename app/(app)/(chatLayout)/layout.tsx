@@ -51,7 +51,7 @@ const ChatLayout = ({ children }: { children: React.ReactNode }) => {
     <PanelGroup
       autoSaveId={"quanthive-dashboard-panel-group"}
       direction="horizontal"
-      className="flex flex-row w-full mt-6 h-full"
+      className="flex flex-row w-full mt-6"
     >
       <Panel defaultSize={70} minSize={75} className="h-full mr-4">
         {children}
@@ -80,7 +80,7 @@ const ChatLayout = ({ children }: { children: React.ReactNode }) => {
         </PanelResizeHandle>
       </div>
 
-      <Panel collapsible minSize={17} defaultSize={20} className="h-full ml-4">
+      <Panel collapsible minSize={17} defaultSize={20} className="ml-4">
         <ExplainableAI />
       </Panel>
     </PanelGroup>
