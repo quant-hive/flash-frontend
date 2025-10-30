@@ -18,7 +18,7 @@ export default function DashboardPage() {
   return (
     <>
       <div className="flex flex-col h-full overflow-auto custom-scrollbar pr-2 outline-none">
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <h1 className="text-2xl font-light">Glance</h1>
           <div className="flex flex-row gap-4 mt-3">
             <ResultMetricCard
@@ -47,7 +47,7 @@ export default function DashboardPage() {
             />
           </div>
         </div>
-
+ */}
         <BacktestForm />
       </div>
 
