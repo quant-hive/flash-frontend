@@ -9,6 +9,10 @@ import { format, parse } from "date-fns";
 import { FormProvider, useForm } from "react-hook-form";
 import { backtestService, databaseService } from "@/lib/backtest-service";
 import { AxiosError } from "axios";
+import {
+  useBacktestForm,
+  BacktestFormValues,
+} from "@/context/backtest-form-context";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Popover,
@@ -32,50 +36,10 @@ import HoverTooltipWrapper from "@/components/tooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import Params from "@/components/dashboard/backtest/params";
 
 const BacktestForm = () => {
-  const backtestSchema = z
-    .object({
-      prompt: z.string().min(10, {
-        message: "Prompt must be at least 10 characters.",
-      }),
-      name: z.string().min(1, {
-        message: "Name must be at least 1 character.",
-      }),
-      tickers: z.array(z.string()).min(1, {
-        message: "Please select at least one instrument.",
-      }),
-      initial_cash: z.coerce.number().min(1000, {
-        message: "Initial cash must be at least 1000.",
-      }),
-      start_date: z.string().regex(/^\d{2}-\d{2}-\d{4}$/, {
-        message: "Please enter date in dd-MM-yyyy format.",
-      }),
-      end_date: z.string().regex(/^\d{2}-\d{2}-\d{4}$/, {
-        message: "Please enter date in dd-MM-yyyy format.",
-      }),
-      commission: z.coerce.number().min(0).max(100, {
-        message: "Commission must be between 0 and 100.",
-      }),
-    })
-    .refine(
-      (data) => {
-        try {
-          const startDate = parse(data.start_date, "dd-MM-yyyy", new Date());
-          const endDate = parse(data.end_date, "dd-MM-yyyy", new Date());
-          return startDate < endDate;
-        } catch {
-          return false;
-        }
-      },
-      {
-        message: "End date must be after start date.",
-        path: ["end_date"],
-      }
-    );
-
-  type BacktestFormValues = z.infer<typeof backtestSchema>;
+  // Get form and related data from context
+  const { form, formatDateForSave } = useBacktestForm();
 
   interface Chat {
     type: "prompt" | "response";
@@ -91,63 +55,9 @@ const BacktestForm = () => {
     useState<BacktestResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [dbInfo, setDbInfo] = useState<any>(null);
-  const [availableInstruments, setAvailableInstruments] = useState<string[]>(
-    []
-  );
   const formRef = useRef<HTMLFormElement | null>(null);
   const leftAnchorRef = useRef<HTMLDivElement | null>(null);
   const rightAnchorRef = useRef<HTMLDivElement | null>(null);
-
-  // Helper functions for date formatting
-  const formatDateForDisplay = (dateString: string): string => {
-    if (!dateString) return "";
-    try {
-      const date = new Date(dateString);
-      return format(date, "dd-MM-yyyy");
-    } catch {
-      return dateString;
-    }
-  };
-
-  const formatDateForSave = (dateString: string): string => {
-    if (!dateString) return "";
-    try {
-      // Parse dd-MM-yyyy format and convert to yyyy-MM-dd
-      const date = parse(dateString, "dd-MM-yyyy", new Date());
-      return format(date, "yyyy-MM-dd");
-    } catch {
-      return dateString;
-    }
-  };
-
-  const parseDateInput = (value: string): string => {
-    if (!value) return "";
-    // Remove any non-digit characters except hyphens
-    const cleaned = value.replace(/[^\d-]/g, "");
-    // Ensure dd-MM-yyyy format
-    const parts = cleaned.split("-");
-    if (parts.length === 3) {
-      const [day, month, year] = parts;
-      if (day.length <= 2 && month.length <= 2 && year.length <= 4) {
-        return cleaned;
-      }
-    }
-    return cleaned;
-  };
-
-  const form = useForm<BacktestFormValues>({
-    resolver: zodResolver(backtestSchema),
-    defaultValues: {
-      name: "",
-      prompt: "",
-      tickers: [],
-      initial_cash: 10000,
-      start_date: "",
-      end_date: "",
-      commission: 0.1,
-    },
-  });
 
   const handleBacktestSubmitted = async (id: string) => {
     let hasAppendedResult = false;
@@ -248,34 +158,6 @@ const BacktestForm = () => {
     }
   };
 
-  // Load available instruments and database info
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [instruments, dbInfo] = await Promise.all([
-          databaseService.getAvailableInstruments(),
-          databaseService.getDatabaseInfo(),
-        ]);
-
-        setAvailableInstruments(instruments);
-        setDbInfo({
-          start_date: dbInfo.start_date,
-          end_date: dbInfo.end_date,
-        });
-
-        // Set default dates if available
-        if (dbInfo.start_date && dbInfo.end_date) {
-          form.setValue("start_date", formatDateForDisplay(dbInfo.start_date));
-          form.setValue("end_date", formatDateForDisplay(dbInfo.end_date));
-        }
-      } catch (err: any) {
-        console.error("Error loading form data:", err);
-      }
-    };
-
-    loadData();
-  }, [form]);
-
   // Auto-scroll to bottom when chat updates
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -289,7 +171,7 @@ const BacktestForm = () => {
       <form
         ref={formRef}
         onSubmit={form.handleSubmit(onSubmit)}
-        className="relative flex flex-row mt-6 h-full w-full gap-x-24"
+        className="relative flex flex-row h-full w-full"
       >
         <div
           ref={leftAnchorRef}
@@ -393,7 +275,7 @@ const BacktestForm = () => {
             </div>
           </div>
 
-          <div className="px-4 py-4 relative flex flex-col gap-2 items-center justify-center mt-4 bg-card border-2 border-card-border rounded-2xl h-[600px]">
+          <div className="px-4 py-4 relative flex flex-col gap-2 items-center justify-center mt-4 bg-card border-2 border-card-border rounded-2xl h-full">
             {/* Chat Messages Container */}
             <div className="flex-1 w-full overflow-hidden relative">
               {chat.length === 0 ? (
@@ -655,12 +537,12 @@ const BacktestForm = () => {
             </div>
 
             {/* Input Area - Always at bottom */}
-            <div className="relative w-full mt-4">
+            <div className="relative w-full mt-4 flex justify-center">
               <div
                 onClick={() => {
                   textAreaRef.current?.focus();
                 }}
-                className="relative bg-[#232323] rounded-md flex flex-col gap-4 px-4 py-2"
+                className="relative w-[60%] bg-[#232323] rounded-md flex flex-col gap-4 px-2 py-2"
               >
                 <FormField
                   control={form.control}
@@ -670,7 +552,7 @@ const BacktestForm = () => {
                       <FormControl>
                         <TextareaAutosize
                           id="playground-chat"
-                          className="w-full bg-transparent border-none outline-none resize-none placeholder:text-input text-sm placeholder:select-none text-primary"
+                          className="w-full bg-transparent border-none outline-none resize-none placeholder:text-input placeholder:select-none text-primary custom-scrollbar px-2"
                           maxRows={8}
                           placeholder="Describe your trading strategy in plain language..."
                           {...field}
@@ -694,13 +576,13 @@ const BacktestForm = () => {
                       <FormDescription className="sr-only">
                         Describe your strategy in plain language
                       </FormDescription>
-                      <FormMessage className="text-xs" />
+                      <FormMessage className="text-xs pl-2" />
                     </FormItem>
                   )}
                 />
 
-                <div className="flex flex-row items-center justify-end gap-2 h-8">
-                  <Popover modal>
+                <div className="flex flex-row items-center justify-end gap-2 h-8 px-1">
+                  {/* <Popover modal>
                     <PopoverTrigger asChild>
                       <button
                         onClick={(e) => {
@@ -726,7 +608,7 @@ const BacktestForm = () => {
                         rightAnchorRef={rightAnchorRef}
                       />
                     </PopoverContent>
-                  </Popover>
+                  </Popover> */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();

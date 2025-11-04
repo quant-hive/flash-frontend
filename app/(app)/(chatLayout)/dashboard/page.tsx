@@ -17,8 +17,10 @@ import ResultMetricCard from "@/components/result-metric-card";
 export default function DashboardPage() {
   return (
     <>
-      <div className="flex flex-col h-full overflow-auto custom-scrollbar pr-2 outline-none">
-        {/* <div className="flex flex-col">
+      <BacktestForm />
+      {/*
+      <div className="flex flex-col w-full h-full">
+         <div className="flex flex-col">
           <h1 className="text-2xl font-light">Glance</h1>
           <div className="flex flex-row gap-4 mt-3">
             <ResultMetricCard
@@ -47,11 +49,11 @@ export default function DashboardPage() {
             />
           </div>
         </div>
- */}
-        <BacktestForm />
+ 
+       
       </div>
 
-      {/* <div>
+      <div>
         <h1 className="text-3xl font-bold mb-1">Flash</h1>
         <p className="text-muted-foreground">
           Test your investment ideas in minutes

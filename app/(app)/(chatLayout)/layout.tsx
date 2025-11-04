@@ -10,6 +10,8 @@ import {
 import { useAuth } from "@/context/auth";
 import { useRouter } from "next/navigation";
 import ExplainableAI from "@/components/dashboard/explainable-ai/page";
+import RightPanel from "@/components/right-panel";
+import { BacktestFormProvider } from "@/context/backtest-form-context";
 
 const ChatLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
@@ -48,42 +50,44 @@ const ChatLayout = ({ children }: { children: React.ReactNode }) => {
   }, [isAuthenticated, router]);
 
   return (
-    <PanelGroup
-      autoSaveId={"quanthive-dashboard-panel-group"}
-      direction="horizontal"
-      className="flex flex-row w-full mt-6"
-    >
-      <Panel defaultSize={70} minSize={75} className="h-full mr-4">
-        {children}
-      </Panel>
+    <BacktestFormProvider>
+      <PanelGroup
+        autoSaveId={"quanthive-dashboard-panel-group"}
+        direction="horizontal"
+        className="flex flex-row w-full mt-6"
+      >
+        <Panel defaultSize={70} minSize={75} className="mr-4">
+          {children}
+        </Panel>
 
-      <div className="flex flex-col items-center justify-center">
-        <PanelResizeHandle
-          onPointerDown={() => {
-            setResizableHandlePointerDown(true);
-            setResizableHandlePointerUp(false);
-          }}
-          onPointerUp={() => {
-            setResizableHandlePointerDown(false);
-            setResizableHandlePointerUp(true);
-          }}
-          id="resize-handle"
-          className={`flex flex-col gap-1 px-1.5 py-2 rounded-full bg-card text-[#5E5E5E] border-2 border-[#5E5E5E] ${
-            resizableHandlePointerDown
-              ? "bg-card-foreground outline outline-2 outline-offset-2 outline-blue-400"
-              : "hover:bg-card-foreground hover:outline outline-2 outline-offset-2 outline-blue-400"
-          }`}
-        >
-          <div className="w-1 h-1 rounded-full bg-[#5E5E5E]" />
-          <div className="w-1 h-1 rounded-full bg-[#5E5E5E]" />
-          <div className="w-1 h-1 rounded-full bg-[#5E5E5E]" />
-        </PanelResizeHandle>
-      </div>
+        <div className="flex flex-col items-center justify-center">
+          <PanelResizeHandle
+            onPointerDown={() => {
+              setResizableHandlePointerDown(true);
+              setResizableHandlePointerUp(false);
+            }}
+            onPointerUp={() => {
+              setResizableHandlePointerDown(false);
+              setResizableHandlePointerUp(true);
+            }}
+            id="resize-handle"
+            className={`flex flex-col gap-1 px-1.5 py-2 rounded-full bg-card text-[#5E5E5E] border-2 border-[#5E5E5E] ${
+              resizableHandlePointerDown
+                ? "bg-card-foreground outline outline-2 outline-offset-2 outline-blue-400"
+                : "hover:bg-card-foreground hover:outline outline-2 outline-offset-2 outline-blue-400"
+            }`}
+          >
+            <div className="w-1 h-1 rounded-full bg-[#5E5E5E]" />
+            <div className="w-1 h-1 rounded-full bg-[#5E5E5E]" />
+            <div className="w-1 h-1 rounded-full bg-[#5E5E5E]" />
+          </PanelResizeHandle>
+        </div>
 
-      <Panel collapsible minSize={17} defaultSize={20} className="ml-4">
-        <ExplainableAI />
-      </Panel>
-    </PanelGroup>
+        <Panel collapsible minSize={17} defaultSize={20} className="ml-4">
+          <RightPanel />
+        </Panel>
+      </PanelGroup>
+    </BacktestFormProvider>
   );
 };
 
