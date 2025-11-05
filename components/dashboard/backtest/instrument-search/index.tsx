@@ -1,3 +1,4 @@
+import CustomPopoverContent from "@/components/custom-popover-content";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -7,6 +8,10 @@ import {
 } from "@/components/ui/popover";
 import { Check, ChevronDown, XIcon } from "lucide-react";
 import { forwardRef, useEffect, useState, useRef, HTMLAttributes } from "react";
+import symbolss from "@/public/symbolss.json";
+import { dbService } from "@/services/IndexDBService";
+import type { Instrument } from "@/services/IndexDBService";
+import { useDebounce } from "@/hooks/use-debounce";
 
 const InstrumentSearch = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
   ({ ...props }, ref) => {
@@ -18,18 +23,18 @@ const InstrumentSearch = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
     const inputRef = useRef<HTMLInputElement | null>(null);
     const selectedInstrumentsRef = useRef<HTMLDivElement | null>(null);
 
-    const [selectedInstruments, setSelectedInstruments] = useState<string[]>([
-      "BAAPL",
-      "CAAPL",
-      "DAAPL",
-    ]);
-    const [searchedInstruments, setSearchedInstruments] = useState<string[]>([
-      "AAPL",
-      "GOOGL",
-      "MSFT",
-      "AMZN",
-      "TSLA",
-    ]);
+    const [selectedInstruments, setSelectedInstruments] = useState<string[]>(
+      []
+    );
+    const [searchedInstruments, setSearchedInstruments] = useState<
+      Instrument[]
+    >([]);
+
+    // Debounce the input value correctly
+    const debouncedValue = useDebounce(value, 300);
+
+    // Track DB init so searches wait for it
+    const initPromiseRef = useRef<Promise<void> | null>(null);
 
     const toggleOption = (instrument: string) => {
       if (selectedInstruments.includes(instrument)) {
@@ -42,16 +47,58 @@ const InstrumentSearch = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
     };
 
     useEffect(() => {
-      if (value.trim() && value.length >= 2) {
-        setOpen(true);
-      } else {
-        setOpen(false);
-      }
-    }, [value]);
+      // Initialize DB and seed data once
+      initPromiseRef.current = (async () => {
+        await dbService.initDB();
+        const filtered = symbolss.filter(
+          (item) => typeof item === "string" && item.trim() !== ""
+        ) as string[];
+        const uniqueSymbols = Array.from(new Set(filtered));
+        // bulkAddData now clears data internally, no need to call clearData separately
+        await dbService.bulkAddData(uniqueSymbols);
+      })();
+    }, []);
 
     useEffect(() => {
-      console.log(inputRef.current?.clientWidth);
-    }, [inputRef.current?.clientWidth]);
+      const term = debouncedValue.trim();
+      if (term && term.length >= 2) {
+        setOpen(true);
+        let cancelled = false;
+        const run = async () => {
+          try {
+            if (initPromiseRef.current) {
+              await initPromiseRef.current;
+            }
+            const results = await dbService.searchData(term);
+            // Deduplicate by id
+            const uniqueResults = Array.from(
+              new Map(results.map((r) => [r.id, r])).values()
+            );
+            if (!cancelled) setSearchedInstruments(uniqueResults);
+          } catch (err) {
+            console.error(err);
+          }
+        };
+        run();
+        return () => {
+          cancelled = true;
+        };
+      } else {
+        setOpen(false);
+        setSearchedInstruments([]);
+      }
+    }, [debouncedValue]);
+
+    useEffect(() => {
+      console.log("Selected Instruments:", selectedInstruments);
+    }, [selectedInstruments]);
+
+    useEffect(() => {
+      console.log(
+        "Searched Instruments:",
+        searchedInstruments.map((i) => i.value)
+      );
+    }, [searchedInstruments]);
 
     return (
       <div>
@@ -87,16 +134,16 @@ const InstrumentSearch = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
           >
             {searchedInstruments.map((instrument) => (
               <div
-                key={instrument}
+                key={instrument.id}
                 className={`text-sm flex flex-row justify-between items-center text-foreground py-1 px-2 ${
-                  selectedInstruments.includes(instrument)
+                  selectedInstruments.includes(instrument.value)
                     ? "bg-primary/10 hover:bg-primary/20 rounded-sm w-full"
                     : "hover:bg-secondary"
                 } hover:bg-secondary rounded-sm w-full`}
-                onClick={() => toggleOption(instrument)}
+                onClick={() => toggleOption(instrument.value)}
               >
-                <span>{instrument}</span>
-                {selectedInstruments.includes(instrument) && (
+                <span>{instrument.value}</span>
+                {selectedInstruments.includes(instrument.value) && (
                   <Check className="ml-2 h-[14px] w-[14px] text-primary" />
                 )}
               </div>
@@ -128,7 +175,7 @@ const InstrumentSearch = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
                     >
                       <span>{instrument}</span>
                       <XIcon
-                        className="ml-2 h-[14px] w-[14px] cursor-pointer hover:scale-125"
+                        className="ml-1 h-[14px] w-[14px] cursor-pointer hover:scale-125"
                         onClick={(event) => {
                           event.stopPropagation();
                           toggleOption(instrument);
@@ -151,7 +198,7 @@ const InstrumentSearch = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
                           />
                         </Badge>
                       </PopoverTrigger>
-                      <PopoverContent className="p-2 w-fit max-w-[200px] overflow-hidden">
+                      <CustomPopoverContent className="w-fit max-w-[200px] overflow-hidden">
                         <div className="flex flex-wrap gap-2 max-w-full">
                           {selectedInstruments
                             .slice(maxVisible)
@@ -171,7 +218,7 @@ const InstrumentSearch = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
                               </Badge>
                             ))}
                         </div>
-                      </PopoverContent>
+                      </CustomPopoverContent>
                     </Popover>
                   )}
                 </>
