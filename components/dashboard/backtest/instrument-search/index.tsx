@@ -13,6 +13,42 @@ import { dbService } from "@/services/IndexDBService";
 import type { Instrument } from "@/services/IndexDBService";
 import { useDebounce } from "@/hooks/use-debounce";
 
+// Global promise to ensure DB initialization happens only once across all component instances
+let dbInitPromise: Promise<void> | null = null;
+
+const initializeDatabase = async () => {
+  if (dbInitPromise) {
+    // If initialization is already in progress or completed, return the existing promise
+    return dbInitPromise;
+  }
+
+  dbInitPromise = (async () => {
+    try {
+      await dbService.initDB();
+
+      // Check if data already exists before loading
+      const dataExists = await dbService.hasData();
+      if (dataExists) {
+        console.log("Database already contains data, skipping bulk load");
+        return;
+      }
+
+      const filtered = symbolss.filter(
+        (item) => typeof item === "string" && item.trim() !== ""
+      ) as string[];
+      const uniqueSymbols = Array.from(new Set(filtered));
+      await dbService.bulkAddData(uniqueSymbols);
+    } catch (error) {
+      console.error("Failed to initialize database:", error);
+      // Reset the promise on error so it can be retried
+      dbInitPromise = null;
+      throw error;
+    }
+  })();
+
+  return dbInitPromise;
+};
+
 const InstrumentSearch = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
   ({ ...props }, ref) => {
     const [open, setOpen] = useState(false);
@@ -47,16 +83,8 @@ const InstrumentSearch = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
     };
 
     useEffect(() => {
-      // Initialize DB and seed data once
-      initPromiseRef.current = (async () => {
-        await dbService.initDB();
-        const filtered = symbolss.filter(
-          (item) => typeof item === "string" && item.trim() !== ""
-        ) as string[];
-        const uniqueSymbols = Array.from(new Set(filtered));
-        // bulkAddData now clears data internally, no need to call clearData separately
-        await dbService.bulkAddData(uniqueSymbols);
-      })();
+      // Use the global initialization function to ensure it runs only once
+      initPromiseRef.current = initializeDatabase();
     }, []);
 
     useEffect(() => {
